@@ -17,7 +17,7 @@ export default function App() {
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor="rgb(19, 19, 24)" />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Entrar">
+        <Stack.Navigator initialRouteName="Produto">
           <Stack.Screen name="Pesquisa" component={Pesquisa} />
           <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
           <Stack.Screen name="Entrar" component={Entrar} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
