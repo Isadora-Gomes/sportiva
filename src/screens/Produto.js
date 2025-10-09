@@ -1,162 +1,239 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Dimensions } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React from "react";
+import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet} from "react-native";
 
-const Entrar = ({ navigation }) => {
-    const redirecionarCadastro = () => {
-        navigation.navigate("Cadastro")
-    }
+export default function App() {
+  return (
+    <ScrollView style={estilos.tela} contentContainerStyle={estilos.conteudoTela}>
+      <ImageBackground
+        source={{ uri: "" }}
+        style={estilos.hero}
+      >
+        <Text style={estilos.logo}>SPORTIVA</Text>
+        <Text style={estilos.tituloHero}>
+          Encontre aqui os <Text style={estilos.destaque}>melhores</Text> produtos de esporte
+        </Text>
+      </ImageBackground>
 
-    const { width, height } = Dimensions.get('window');
+      <TouchableOpacity style={estilos.botaoFiltro}>
+        <Text style={estilos.textoFiltro}>FILTROS</Text>
+      </TouchableOpacity>
 
-    return (
-            <View style={styles.container}>
-                <View style={{}}>
-                    <View style={{
-                        width: width,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
-                        <Image
-                            style={styles.logo}
-                            source={require('../../assets/img/logo.png')}
-                        />
-                    </View>
-                    <View style={{
-                        position: 'relative',
-                    }}>
-                        <View style={{
-                            height: 1,
-                            width: width,
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            zIndex: 3,
-                        }}></View>
-                        
-                        <View style={{
-                            height: height * 0.25,
-                            justifyContent: 'center',
-                            paddingLeft: 40,
-                            boxSizing: 'border-box',
-                        }}>
-                            <Text style={styles.titulo}>Produtos</Text>
-                        </View>
-
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={styles.label}>E-mail</Text>
-                            <View style={styles.inputContainer}>
-                                <Icon name="envelope" size={20} color="#fff" style={{ marginRight: 10 }} />
-                                <TextInput
-                                    style={styles.input}
-                                />
-                            </View>
-                            <Text style={styles.label}>Senha</Text>
-                            <View style={styles.inputContainer}>
-                                <Icon name="lock" size={20} color="#fff" style={{ marginRight: 10 }} />
-                                <TextInput
-                                    style={styles.input}
-                                    secureTextEntry
-                                />
-                            </View>
-
-                            <TouchableOpacity style={styles.button} >
-                                <Text style={styles.buttonText}>Entrar</Text>
-                            </TouchableOpacity>
-                            <View style={styles.textCadastro}>
-                                <TouchableOpacity onPress={redirecionarCadastro}>
-                                    <Text style={styles.linkCadastro}>
-                                        Não possui uma conta? <Text style={styles.linkDestacado}>Cadastre-se</Text>
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </View>
+      <View style={estilos.itemProduto}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={{ uri: "" }}
+            style={estilos.thumb}
+          />
+          <Text style={estilos.preco}>R$ 500,00</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Tênis Vulcan</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>4.5 ★</Text>
             </View>
-    );
+          </View>
+          <Text style={estilos.descricao}>
+            Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
+            com conforto superior — ideal para quem busca presença e segurança no
+            dia a dia ou na prática esportiva.
+          </Text>
+        </View>
+      </View>
+
+      <View style={estilos.itemProduto}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={{ uri: "" }}
+            style={estilos.thumb}
+          />
+          <Text style={estilos.preco}>R$ 99,90</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Garrafa térmica</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>4.8 ★</Text>
+            </View>
+          </View>
+          <Text style={estilos.descricao}>
+            Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
+            perfeita para treinos, trabalho ou viagens.
+          </Text>
+        </View>
+      </View>
+
+      <View style={estilos.itemProduto}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={{ uri: "" }}
+            style={estilos.thumb}
+          />
+          <Text style={estilos.preco}>R$ 399,90</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Mochila pop</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>5.0 ★</Text>
+            </View>
+          </View>
+          <Text style={estilos.descricao}>
+            Praticidade e atitude: amplo espaço interno, compartimentos organizados
+            e materiais duráveis — ótima para estudos, trabalho e passeios.
+          </Text>
+        </View>
+      </View>
+
+      <View style={estilos.itemProduto}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={{ uri: "" }}
+            style={estilos.thumb}
+          />
+          <Text style={estilos.preco}>R$ 99,90</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Camisa flow</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>4.3 ★</Text>
+            </View>
+          </View>
+          <Text style={estilos.descricao}>
+            Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
+            uso casual.
+          </Text>
+        </View>
+      </View>
+
+      <View style={estilos.rodape}>
+        <Text style={estilos.rodapeTexto}>
+          Os melhores produtos esportivos, ofertas exclusivas e tudo o que você precisa
+          para turbinar sua performance.
+        </Text>
+      </View>
+    </ScrollView>
+  );
 }
 
-const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    logo: {
-        width: 400,
-        height: 200,
-    },
-    container: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 20,
-    },
-    titulo: {
-        fontSize: 40,
-        color: '#fff',
-        fontWeight: 'bold',
-        fontFamily: 'Outfit',
-        borderBottomWidth: 2,
-        borderBottomColor: '#8400FF',
-        paddingBottom: 10,
-        textAlign: 'center',
-        width: 160,
-    },
-    label: {
-        color: '#D2D2D2',
-        fontSize: 16,
-        marginBottom: 5,
-        fontFamily: 'Gotham',
-        alignSelf: 'flex-start',
-        marginLeft: 40,
-    },
-    input: {
-        flex: 1,
-        height: 40,
-        color: '#fff',
-        fontFamily: 'Gotham',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 2,
-        borderBottomColor: '#8400FF',
-        marginBottom: 20,
-        width: 300,
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 38,
-        width: 110,
-        borderRadius: 7,
-        marginBottom: 20,
-        marginTop: 20,
-        backgroundColor: 'rgb(83, 72, 207)',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 800,
-        fontFamily: 'Gotham',
-    },
-    textCadastro: {
-        marginTop: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: 60,
-    },
-    linkCadastro: {
-        fontFamily: 'Gotham',
-        fontSize: 16,
-        color: '#AFAFAF',
-    },
-    linkDestacado: {
-        color: '#8400FF',
-        textDecorationLine: 'underline',
-    },
+const estilos = StyleSheet.create({
+  tela: {
+    flex: 1,
+    backgroundColor: "#0f0f10",
+  },
+  conteudoTela: {
+    paddingBottom: 40,
+  },
+  hero: {
+    height: 220,
+    justifyContent: "flex-end",
+    paddingHorizontal: 18,
+    paddingBottom: 18,
+    backgroundColor: "#000",
+  },
+  logo: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 18,
+    position: "absolute",
+    top: 18,
+    left: 18,
+  },
+  tituloHero: {
+    color: "#fff",
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: "600",
+  },
+  destaque: {
+    fontWeight: "900",
+  },
+  botaoFiltro: {
+    alignSelf: "flex-start",
+    marginTop: 12,
+    marginLeft: 18,
+    borderWidth: 1,
+    borderColor: "#4b2b5f",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  textoFiltro: {
+    color: "#d6cfe6",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  itemProduto: {
+    flexDirection: "row",
+    backgroundColor: "#121212",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    marginHorizontal: 12,
+    alignItems: "flex-start",
+  },
+  colPreco: {
+    width: 92,
+    backgroundColor: "#191919",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    alignItems: "center",
+    marginRight: 10,
+  },
+  thumb: {
+    width: 56,
+    height: 56,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  preco: {
+    color: "#e6e6e6",
+    fontWeight: "800",
+    fontSize: 12,
+    textAlign: "center",
+  },
+  conteudo: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  topoItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  nome: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+  notaBox: {
+    backgroundColor: "#1f1f1f",
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  notaTexto: {
+    color: "#ffd455",
+    fontWeight: "800",
+    fontSize: 12,
+  },
+  descricao: {
+    color: "#bfbfbf",
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  rodape: {
+    marginTop: 8,
+    paddingVertical: 20,
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  rodapeTexto: {
+    color: "#aaa",
+    fontSize: 12,
+    textAlign: "center",
+  },
 });
-
-export default Entrar;
