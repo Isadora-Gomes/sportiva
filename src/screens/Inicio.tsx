@@ -100,6 +100,16 @@ const Inicio = ({}) => {
         </View>
       </View>
 </View>
+<Text style={estilos.botaoFiltro}>
+        <Text style={estilos.seeall}>Veja todos os produtos</Text>
+      </Text>
+
+
+
+<TouchableOpacity style={estilos.botaosee}>
+        <Text style={estilos.textosee}>Veja todos os produtos</Text>
+      </TouchableOpacity>
+
       <View style={estilos.rodape}>
         <Text style={estilos.rodapeTexto}>
           Os melhores produtos esportivos, ofertas exclusivas e tudo o que você precisa
@@ -153,46 +163,57 @@ const estilos = StyleSheet.create({
         justifyContent: "space-between",
     },
   botaoFiltro: {
-    alignSelf: "center",
     marginTop: 20,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginBottom: 12,
+
   },
   textoFiltro: {
     color: "#ffffffff",
     fontSize: 22,
     fontWeight: "600",
+    textAlign: "center",
+  },
+  seeall: {
+    color: "#ffffffff",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "right",
+
   },
   itemProduto: {
     borderRadius: 10,
-    padding: 12,
+    padding: 8,
     alignItems: "center",
 },
 colPreco: {
     alignItems: "center",
 },
 produto: {
-    width: 60,
-    height: 60, 
+    width: 80,
+    height: 80, 
+    position: "relative",
+    top: 20,
+    zIndex: 1,
   },
   conteudo: {
     flex: 1,
+    alignItems: "center",
     justifyContent: "center",
-     backgroundColor: "#1c1c1e",
-    height: 50,
-    padding: 10,
-    borderRadius: 8,
+     backgroundColor: "#2f2f31ff",
+    height: 45,
+    paddingTop: 20,
+    borderRadius: 3,
+    width: 80,
   },
   topoItem: {
-    flexDirection: "row",
+    flex: 1,
     alignItems: "center",
   },
   nome: {
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 6,
+    fontSize: 16,
+    fontWeight: "600",
+
   },
   notaBox: {
     paddingHorizontal: 8,
@@ -204,6 +225,19 @@ produto: {
     color: "#e4e4e4ff",
     fontSize: 12,
     lineHeight: 18,
+  },
+  botaosee: {
+    backgroundColor: "#8400FF",
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignSelf: "center",
+  marginTop: 20,
+  },
+  textosee: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   rodape: {
     marginTop: 8,
