@@ -7,6 +7,7 @@ import Pesquisa from "../screens/Pesquisa";
 import Produto from '../screens/Produto';
 import React from "react";
 import { NativeStackNavigationOptions, NativeStackNavigationProp } from "@react-navigation/native-stack";
+import Detalhes from "../screens/Detalhes";
 
 type NativeStackNavigationOptionsCallback = (props: {
     route: RouteProp<ParamListBase, "Cadastro">;
@@ -27,10 +28,11 @@ class Screens {
 
     Entrar: ParamItem = { component: Entrar, params: undefined, options: { headerShown: false } };
     Cadastro: ParamItem = { component: Cadastro, params: undefined, options: { headerShown: false } };
-    Carrinho: ParamItem = { component: Carrinho, params: undefined, options: { title: "Carrinho" } };
+    Carrinho: ParamItem = { component: Carrinho, params: undefined, options: { headerShown: false } };
     Inicio: ParamItem = { component: Inicio, params: undefined, options: { title: "Início" } };
     Pesquisa: ParamItem = { component: Pesquisa, params: undefined, options: { headerShown: false } };
     Produto: ParamItem = { component: Produto, params: undefined, options: { headerShown: false } };
+    Detalhes: ParamItem = { component: Detalhes, params: undefined, options: { headerShown: false } };
 
     static readonly instance = new Screens();
 }
