@@ -18,7 +18,7 @@ export default function App() {
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor="rgb(19, 19, 24)" />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Perfil">
+        <Stack.Navigator initialRouteName="Inicio">
           {(Object.entries(screens)).map(([name, config]) => (
             <Stack.Screen
               key={"Screen." + name}
