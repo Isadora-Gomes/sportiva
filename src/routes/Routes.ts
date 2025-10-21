@@ -4,6 +4,7 @@ import Cadastro from "../screens/Cadastro";
 import Carrinho from "../screens/Carrinho";
 import Inicio from "../screens/Inicio";
 import Pesquisa from "../screens/Pesquisa";
+import Perfil from "../screens/Perfil";
 import Produto from '../screens/Produto';
 import React from "react";
 import { NativeStackNavigationOptions, NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -31,6 +32,7 @@ class Screens {
     Carrinho: ParamItem = { component: Carrinho, params: undefined, options: { headerShown: false } };
     Inicio: ParamItem = { component: Inicio, params: undefined, options: { title: "Início" } };
     Pesquisa: ParamItem = { component: Pesquisa, params: undefined, options: { headerShown: false } };
+    Perfil: ParamItem = { component: Perfil, params: undefined, options: { headerShown: false } };
     Produto: ParamItem = { component: Produto, params: undefined, options: { headerShown: false } };
     Detalhes: ParamItem = { component: Detalhes, params: undefined, options: { headerShown: false } };
 
