@@ -16,9 +16,11 @@ type NativeStackNavigationOptionsCallback = (props: {
     theme: ReactNavigation.Theme;
 }) => NativeStackNavigationOptions | undefined;
 
-export interface ParamItem<P = NavigationParameter> {
-    component: React.ComponentType<P>,
-    params: P | any,
+type NavigationParameterItem<P extends ScreenNames> = NavigationParameter<P> & NavigationParameter
+
+export interface ParamItem<P extends ScreenNames, T = undefined> {
+    component: React.ComponentType<NavigationParameterItem<P>>,
+    // params: T,
     options?: NativeStackNavigationOptions
         | NativeStackNavigationOptionsCallback
         | undefined
@@ -27,14 +29,14 @@ export interface ParamItem<P = NavigationParameter> {
 class Screens {
     private constructor() {}
 
-    Entrar: ParamItem = { component: Entrar, params: undefined, options: { headerShown: false } };
-    Cadastro: ParamItem = { component: Cadastro, params: undefined, options: { headerShown: false } };
-    Carrinho: ParamItem = { component: Carrinho, params: undefined, options: { headerShown: false } };
-    Inicio: ParamItem = { component: Inicio, params: undefined, options: { title: "Início" } };
-    Pesquisa: ParamItem = { component: Pesquisa, params: undefined, options: { headerShown: false } };
-    Perfil: ParamItem = { component: Perfil, params: undefined, options: { headerShown: false } };
-    Produto: ParamItem = { component: Produto, params: undefined, options: { headerShown: false } };
-    Detalhes: ParamItem = { component: Detalhes, params: undefined, options: { headerShown: false } };
+    Entrar: ParamItem<"Entrar"> = { component: Entrar, options: { headerShown: false } };
+    Cadastro: ParamItem<"Cadastro"> = { component: Cadastro, options: { headerShown: false } };
+    Carrinho: ParamItem<"Carrinho"> = { component: Carrinho, options: { headerShown: false } };
+    Inicio: ParamItem<"Inicio"> = { component: Inicio, options: { title: "Início" } };
+    Pesquisa: ParamItem<"Pesquisa"> = { component: Pesquisa, options: { headerShown: false } };
+    Perfil: ParamItem<"Perfil"> = { component: Perfil, options: { headerShown: false } };
+    Produto: ParamItem<"Produto"> = { component: Produto, options: { headerShown: false } };
+    Detalhes: ParamItem<"Detalhes"> = { component: Detalhes, options: { headerShown: false } };
 
     static readonly instance = new Screens();
 }
@@ -44,9 +46,10 @@ export const screens = Screens.instance;
 export type ScreenNames = keyof Screens;
 
 export type RootStackParamList = {
-    [K in keyof Screens]: Screens[K]['params'];
+    [K in keyof Screens]: Screens[K] extends ParamItem<K, infer T> ? T : undefined;
 }
 
-export interface NavigationParameter {
-    navigation: NavigationProp<RootStackParamList>
+export interface NavigationParameter<N extends ScreenNames | undefined = undefined> {
+    navigation: NavigationProp<RootStackParamList>,
+    route: N extends ScreenNames ? RouteProp<RootStackParamList, N> : RouteProp<RootStackParamList>
 }
