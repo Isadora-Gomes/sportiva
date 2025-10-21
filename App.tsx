@@ -1,26 +1,22 @@
 import "react-native-gesture-handler";
 import { View, StatusBar } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import Cadastro from './src/screens/Cadastro';
-import Entrar from './src/screens/Entrar';
-import Pesquisa from './src/screens/Pesquisa';
-import Produto from './src/screens/Produto';
-import Inicio from './src/screens/Inicio';
-import Carrinho from './src/screens/Carrinho';
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ParamItem, screens } from "./src/routes/Routes";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
-const Stack = createNativeStackNavigator();
+// const Stack = createNativeStackNavigator();
+
+const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor="rgb(19, 19, 24)" />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Perfil">
+        <Drawer.Navigator initialRouteName="Perfil">
           {(Object.entries(screens)).map(([name, config]) => (
-            <Stack.Screen
+            <Drawer.Screen
               key={"Screen." + name}
               name={name}
               component={config.component}
@@ -33,7 +29,7 @@ export default function App() {
           <Stack.Screen name="Produto" component={Produto} options={{ headerShown: false  }} />
           <Stack.Screen name="Inicio" component={Inicio} options={{ title: "Inicio" }} />
           <Stack.Screen name="Carrinho" component={Carrinho} options={{ title: "Carrinho" }} /> */}
-        </Stack.Navigator>
+        </Drawer.Navigator>
       </NavigationContainer>
     </View>
   );
