@@ -5,7 +5,7 @@ import Icon from "../components/icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationParameter } from "../routes/Routes";
 
-const Cadastro = ({ navigation }: NavigationParameter) => {
+const Cadastro = ({ navigation, route }: NavigationParameter<"Cadastro">) => {
     const redirecionarCadastro = () => {
         navigation.navigate("Entrar")
     }
