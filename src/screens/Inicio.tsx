@@ -1,5 +1,7 @@
 import React from "react";
 import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,13 +30,61 @@ const Inicio = ({ }) => {
           <Text style={estilos.textoFiltro}>Melhores ofertas</Text>
         </Text>
 
-        <View style={estilos.itemProduto}>
-          <View style={estilos.conteudo}>
 
-            <Text style={estilos.nome}>Carrossel vou faze</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={estilos.carrosselContainer}
+        >
 
+          <View style={estilos.cardOferta}>
+            <Image
+              source={require('../../assets/img/produto3.png')}
+              style={estilos.imgOferta}
+              resizeMode="contain"
+            />
+            <Text style={estilos.precoOferta}>R$99,90</Text>
           </View>
-        </View>
+
+
+          <View style={estilos.cardOferta}>
+            <Image
+              source={require('../../assets/img/produto4.png')}
+              style={estilos.imgOferta}
+              resizeMode="contain"
+            />
+            <Text style={estilos.precoOferta}>R$59,90</Text>
+          </View>
+
+
+          <View style={estilos.cardOferta}>
+            <Image
+              source={require('../../assets/img/produto1.png')}
+              style={estilos.imgOferta}
+              resizeMode="contain"
+            />
+            <Text style={estilos.precoOferta}>R$49,90</Text>
+          </View>
+
+          <View style={estilos.cardOferta}>
+            <Image
+              source={require('../../assets/img/produto1.png')}
+              style={estilos.imgOferta}
+              resizeMode="contain"
+            />
+            <Text style={estilos.precoOferta}>R$199,90</Text>
+          </View>
+
+          <View style={estilos.cardOferta}>
+            <Image
+              source={require('../../assets/img/produto1.png')}
+              style={estilos.imgOferta}
+              resizeMode="contain"
+            />
+            <Text style={estilos.precoOferta}>R$99,90</Text>
+          </View>
+        </ScrollView>
+
 
         <Text style={estilos.botaoFiltro}>
           <Text style={estilos.textoFiltro}>Categorias</Text>
@@ -103,6 +153,46 @@ const Inicio = ({ }) => {
         <Text style={estilos.botaoFiltro}>
           <Text style={estilos.seeall}>Veja todos os produtos</Text>
         </Text>
+
+        <View style={estilos.cardsContainer}>
+          <View style={estilos.card}>
+            <Image
+              source={require('../../assets/img/tenisCard.png')}
+              style={estilos.cardImage}
+              resizeMode="contain"
+            />
+            <View style={estilos.cardContent}>
+              <Text style={estilos.cardTitle}>Ofertas</Text>
+              <Text style={estilos.cardSubtitle}>Até 25% OFF em calçados</Text>
+              <TouchableOpacity style={estilos.cardButton}>
+                <Text style={estilos.cardButtonText}>Ver mais</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+
+          <View style={estilos.card}>
+            <View style={estilos.cardContent}>
+              <LinearGradient
+    colors={['#8400FF', '#D5A8FF']}
+    style={estilos.card}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 0 }}
+  ></LinearGradient>
+              <Text style={estilos.cardTitle}>Novidades</Text>
+              <Text style={estilos.cardSubtitle}>Confira os novos produtos</Text>
+              <TouchableOpacity style={estilos.cardButton}>
+                <Text style={estilos.cardButtonText}>Conferir</Text>
+              </TouchableOpacity>
+            </View>
+            <Image
+              source={require('../../assets/img/bolsaCard.png')}
+              style={estilos.cardImage}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+
 
         <TouchableOpacity style={estilos.botaoNot}>
           <Image
@@ -252,7 +342,7 @@ const estilos = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#2f2f31ff",
+    backgroundColor: "#3c3c3c",
     height: 45,
     paddingTop: 20,
     borderRadius: 3,
@@ -266,7 +356,6 @@ const estilos = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
-
   },
   notaBox: {
     paddingHorizontal: 8,
@@ -306,6 +395,84 @@ const estilos = StyleSheet.create({
   imgRodape: {
     marginTop: 20,
   },
+
+  carrosselContainer: {
+    paddingHorizontal: 12,
+    gap: 15,
+    marginTop: 25,
+  },
+
+  cardOferta: {
+    backgroundColor: '#2f2f31',
+    borderRadius: 10,
+    width: 180,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#8400FF'
+  },
+  imgOferta: {
+    width: 100,
+    height: 100,
+    marginTop: 12,
+  },
+  precoOferta: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    backgroundColor: '#8400FF',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  cardsContainer: {
+    marginTop: 25,
+    gap: 10,
+  },
+  card: {
+    backgroundColor: '#3c3c3c',
+    borderRadius: 12,
+    height: 160,
+    padding: 8,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 15
+  },
+  cardImage: {
+    width: 100,
+    height: 100,
+    margin: 16,
+  },
+  cardContent: {
+    marginLeft: 20
+  },
+  cardTitle: {
+    color: '#D5A8FF',
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'left',
+    marginBottom: 10,
+  },
+  cardButton: {
+    backgroundColor: '#8400FF',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    width: 100,
+  },
+
+  cardButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+
+
 });
 
 export default Inicio;
