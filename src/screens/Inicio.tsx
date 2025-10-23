@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, FlatList } from "react-native";
-
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationParameter } from "../routes/Routes";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Feather';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DrawerActions } from '@react-navigation/native';
 
-const Inicio = ({ navigation }: NavigationParameter) =>  {
+const Inicio = ({ navigation }: NavigationParameter) => {
   const insets = useSafeAreaInsets();
   const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
-  const toggleNotificacao = () => {
-    setMostrarNotificacao(!mostrarNotificacao);
-  };
+  const toggleNotificacao = () => setMostrarNotificacao(!mostrarNotificacao);
 
-  const redirecionarProduto = () => {
-        navigation.navigate("Produto")
-    }
+  const redirecionarProduto = () => navigation.navigate("Produto");
 
   const mochilas = [
     { id: '1', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluegbag.png') },
@@ -34,26 +30,21 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
     { id: '6', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/graytshirt.png') },
   ];
 
-   const garrafas = [
+  const garrafas = [
     { id: '1', nome: 'Garrafa Power', preco: 'R$ 78,29', imagem: require('../../assets/img/bluebottle.png') },
     { id: '2', nome: 'Aqua Sport', preco: 'R$ 88,10', imagem: require('../../assets/img/orangebottle.png') },
     { id: '3', nome: 'Garrafa Slim', preco: 'R$ 95,00', imagem: require('../../assets/img/blackbluebottle.png') },
     { id: '4', nome: 'Garrafa Chill', preco: 'R$ 135,80', imagem: require('../../assets/img/blackbottle.png') },
   ];
 
-   const tenis = [
+  const tenis = [
     { id: '1', nome: 'Run X Pro', preco: 'R$ 102,29', imagem: require('../../assets/img/pinktenis.png') },
     { id: '2', nome: 'Pulse Air', preco: 'R$ 88,10', imagem: require('../../assets/img/blacktenis.png') },
     { id: '3', nome: 'Storm Fit', preco: 'R$ 95,00', imagem: require('../../assets/img/whitetenis.png') },
     { id: '4', nome: 'Ultra Step', preco: 'R$ 135,80', imagem: require('../../assets/img/orangetenis.png') },
   ];
 
-  interface ProdutoBase {
-    id: string;
-    nome: string;
-    preco: string;
-    imagem: any;
-  }
+  interface ProdutoBase { id: string; nome: string; preco: string; imagem: any; }
   interface Mochila extends ProdutoBase { }
   interface Camisa extends ProdutoBase { }
 
@@ -65,7 +56,6 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
     </View>
   );
 
-
   const CarrosselCamisaItem = ({ item }: { item: Camisa }) => (
     <View style={estilos.divCar}>
       <View style={estilos.itemCar2}>
@@ -76,25 +66,27 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
         </View>
       </View>
     </View>
-
   );
+
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: '#0f0f10' }}
-    >
-      <ScrollView
-        style={estilos.tela}
-        contentContainerStyle={[estilos.conteudoTela]}
-      >
-        <Image
-          source={require('../../assets/img/logoSlim.png')}
-          style={estilos.logo}
-        />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f0f10' }}>
+      <ScrollView style={estilos.tela} contentContainerStyle={estilos.conteudoTela}>
+
+        <View style={estilos.topo}>
+          <Image source={require('../../assets/img/logoSlim.png')} style={estilos.logo} />
+
+          <TouchableOpacity
+            style={estilos.botaoMenu}
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Icon name="menu" size={28} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
         <ImageBackground
           source={require('../../assets/img/banner-sport.png')}
           style={estilos.Inicio}
-        >
-        </ImageBackground>
+        />
 
         <Text style={estilos.botaoFiltro}>
           <Text style={estilos.textoFiltro}>Melhores ofertas</Text>
@@ -359,6 +351,17 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
 }
 
 const estilos = StyleSheet.create({
+  topo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  botaoMenu: {
+    padding: 8,
+    borderRadius: 8,
+  },
   containerCar: {
     flex: 1,
     padding: 16,
@@ -644,7 +647,7 @@ const estilos = StyleSheet.create({
     height: 110,
     marginLeft: 'auto',
     marginRight: 'auto',
-flex: 1,
+    flex: 1,
   },
   cardGradT: {
     borderTopLeftRadius: 12,
