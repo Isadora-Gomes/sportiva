@@ -1,6 +1,6 @@
 // camisa
 import React, { useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, Modal, FlatList } from "react-native";
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from '@react-navigation/native';
@@ -13,18 +13,42 @@ export default function Detalhes() {
 		require('../../assets/img/camisa2.png'),
 		require('../../assets/img/camisa3.png'),
 	];
+
+	const [modalVisivel, setModalVisivel] = useState(false);
+
+	const comentarios = [
+		{
+			id: '1',
+			nome: 'Luis Felipe',
+			texto: 'Amei demais, mas rasgou quando cai andando de bicicleta.',
+			estrelas: 4,
+		},
+		{
+			id: '2',
+			nome: 'Wesley Fioreze',
+			texto: 'Melhor camiseta que eu comprei na minha vida. Recomendo demais.',
+			estrelas: 5,
+		},
+		{
+			id: '3',
+			nome: 'Lucas Machado',
+			texto: 'Compro tudo na Sportiva, melhor loja que existe.',
+			estrelas: 5,
+		},
+	];
+
 	const [index, setIndex] = useState(0);
 	const [selectedColor, setSelectedColor] = useState<string | null>('Roxo');
 	const [selectedSize, setSelectedSize] = useState<string | null>('M');
 
 	const colors = ['Roxo', 'Rosa', 'Vermelho', 'Verde', 'Azul', 'Amarelo'];
-	const sizes = ['P','M','G','GG'];
+	const sizes = ['P', 'M', 'G', 'GG'];
 
 	function prev() { setIndex(i => Math.max(0, i - 1)); }
-	function next() { setIndex(i => Math.min(images.length -1, i + 1)); }
+	function next() { setIndex(i => Math.min(images.length - 1, i + 1)); }
 
 	return (
-		<SafeAreaView style={[styles.container, { paddingTop: insets.top }]}> 
+		<SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
 			<ScrollView contentContainerStyle={styles.content}>
 				<View style={styles.topbar}>
 					<TouchableOpacity style={styles.iconBtn} onPress={() => navigation.navigate('Produto' as never)}><Icon name="chevron-left" size={20} color="#fff" /></TouchableOpacity>
@@ -43,8 +67,10 @@ export default function Detalhes() {
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Icon name="star" size={16} color="#ffd455" />
 						<Text style={styles.rating}>4.3</Text>
-						<Icon name="comment" size={16} color="#fff" style={{ marginLeft: 10 }} />
-						<Text style={styles.rating}>9</Text>
+						<TouchableOpacity onPress={() => setModalVisivel(true)} style={{ marginLeft: 10 }}>
+							<Icon name="comment" size={16} color="#fff" />
+						</TouchableOpacity>
+
 					</View>
 				</View>
 
@@ -68,9 +94,55 @@ export default function Detalhes() {
 					))}
 				</View>
 
-				<TouchableOpacity style={styles.addBtn} onPress={() => Alert.alert('Adicionado', 'Produto adicionado ao carrinho') }>
+				<TouchableOpacity style={styles.addBtn} onPress={() => Alert.alert('Adicionado', 'Produto adicionado ao carrinho')}>
 					<Text style={styles.addBtnText}>Adicionar ao carrinho</Text>
 				</TouchableOpacity>
+
+<Modal
+  visible={modalVisivel}
+  transparent
+  animationType="fade"
+  onRequestClose={() => setModalVisivel(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitulo}>COMENTÁRIOS</Text>
+      <View style={styles.linhaSeparadora} />
+
+      <FlatList
+        data={comentarios}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.comentarioBox}>
+            <View style={styles.comentarioHeader}>
+              <Icon name="user-circle" size={22} color="#A77BFF" />
+              <Text style={styles.comentarioNome}>{item.nome}</Text>
+              <View style={styles.estrelasContainer}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Icon
+                    key={i}
+                    name="star"
+                    size={16}
+                    color={i <= item.estrelas ? '#FFD700' : '#777'}
+                    style={{ marginLeft: 2 }}
+                  />
+                ))}
+              </View>
+            </View>
+            <Text style={styles.comentarioTexto}>{item.texto}</Text>
+          </View>
+        )}
+      />
+
+      <TouchableOpacity
+        style={styles.botaoFechar}
+        onPress={() => setModalVisivel(false)}
+      >
+        <Text style={styles.textoFechar}>Fechar</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
 
 			</ScrollView>
 		</SafeAreaView>
@@ -87,7 +159,7 @@ const styles = StyleSheet.create({
 	carouselNav: { position: 'absolute', top: '50%', transform: [{ translateY: -18 }], backgroundColor: 'rgba(0,0,0,0.4)', padding: 8, borderRadius: 20 },
 	title: { color: '#fff', fontSize: 20, fontWeight: '800', marginTop: 8 },
 	price: { color: '#fff', fontSize: 16, fontWeight: '700' },
-	rating: { color: '#fff', marginLeft: 6, fontWeight: '700' },
+	rating: { color: '#fff', marginLeft: 6, fontWeight: '700'},
 	description: { color: '#bfbfbf', marginTop: 12, marginBottom: 12 },
 	sectionTitle: { color: '#fff', fontWeight: '700', marginTop: 8, marginBottom: 8 },
 	chip: { backgroundColor: '#1f1f1f', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, marginBottom: 8 },
@@ -100,4 +172,70 @@ const styles = StyleSheet.create({
 	sizeTextActive: { color: '#fff' },
 	addBtn: { marginTop: 18, backgroundColor: '#8000ff', paddingVertical: 14, borderRadius: 999, alignItems: 'center' },
 	addBtnText: { color: '#fff', fontWeight: '800' },
+	modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.6)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalContainer: {
+  backgroundColor: '#1c1c1c',
+  width: 340,
+  borderRadius: 15,
+  paddingVertical: 20,
+  paddingHorizontal: 15,
+  shadowColor: '#000',
+  shadowOpacity: 0.4,
+  shadowRadius: 10,
+},
+modalTitulo: {
+  color: '#fff',
+  fontSize: 18,
+  fontWeight: '700',
+  textAlign: 'center',
+  marginBottom: 8,
+},
+linhaSeparadora: {
+  height: 2,
+  backgroundColor: '#A77BFF',
+  marginBottom: 15,
+},
+comentarioBox: {
+  marginBottom: 12,
+},
+comentarioHeader: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+comentarioNome: {
+  color: '#fff',
+  fontWeight: '700',
+  marginLeft: 8,
+  flex: 1,
+},
+estrelasContainer: {
+  flexDirection: 'row',
+  marginRight: 4,
+},
+comentarioTexto: {
+  color: '#ccc',
+  marginTop: 4,
+  marginLeft: 30,
+  fontSize: 13,
+  lineHeight: 18,
+},
+botaoFechar: {
+  backgroundColor: '#A77BFF',
+  borderRadius: 8,
+  paddingVertical: 10,
+  marginTop: 10,
+  alignSelf: 'center',
+  width: 120,
+  alignItems: 'center',
+},
+textoFechar: {
+  color: '#fff',
+  fontWeight: '700',
+},
+
 });
