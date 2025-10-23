@@ -6,6 +6,9 @@ import Inicio from "../screens/Inicio";
 import Pesquisa from "../screens/Pesquisa";
 import Perfil from "../screens/Perfil";
 import Produto from '../screens/Produto';
+import InfoEntrega from "../screens/InfoEntrega";
+import Pagamento from "../screens/Pagamento";
+import FimCompra from "../screens/FimCompra";
 import React from "react";
 import { NativeStackNavigationOptions, NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Detalhes from "../screens/Detalhes";
@@ -43,6 +46,9 @@ class Screens {
     Detalhes2: ParamItem<"Detalhes2"> = { component: Detalhes2, options: { headerShown: false } };
     Detalhes3: ParamItem<"Detalhes3"> = { component: Detalhes3, options: { headerShown: false } };
     Detalhes4: ParamItem<"Detalhes4"> = { component: Detalhes4, options: { headerShown: false } };
+    InfoEntrega: ParamItem<"InfoEntrega"> = { component: InfoEntrega, options: { headerShown: false } };
+    Pagamento: ParamItem<"Pagamento"> = { component: Pagamento, options: { headerShown: false } };
+    FimCompra: ParamItem<"FimCompra"> = { component: FimCompra, options: { headerShown: false } };
 
     static readonly instance = new Screens();
 }

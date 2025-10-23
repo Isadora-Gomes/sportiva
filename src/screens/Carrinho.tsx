@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Modal, TextInput, Pressable, Alert } from "react-native";
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from '@react-navigation/native';
 
 export default function Carrinho() {
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [mochilaQty, setMochilaQty] = useState(1);
   const [garrafaQty, setGarrafaQty] = useState(1);
@@ -149,7 +151,9 @@ export default function Carrinho() {
         <View style={estilos.subtotal}>
           <Text style={estilos.subtotalTxt}>Subtotal R$ {subtotal.toFixed(2)}</Text>
           <TouchableOpacity style={estilos.finalizarBtn}>
-            <Text style={estilos.finalizarTxt}>Concluir pedido</Text>
+            <Text style={estilos.finalizarTxt}
+            onPress={() => navigation.navigate('InfoEntrega' as never)}>
+              Concluir pedido</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
