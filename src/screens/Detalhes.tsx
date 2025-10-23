@@ -94,7 +94,7 @@ export default function Detalhes() {
 					))}
 				</View>
 
-				<TouchableOpacity style={styles.addBtn} onPress={() => Alert.alert('Adicionado', 'Produto adicionado ao carrinho')}>
+				<TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('Carrinho' as never)}>
 					<Text style={styles.addBtnText}>Adicionar ao carrinho</Text>
 				</TouchableOpacity>
 
