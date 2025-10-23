@@ -117,7 +117,7 @@ const Inicio = ({ navigation }: NavigationParameter) => {
 
           <View style={estilos.cardOferta}>
             <Image
-              source={require('../../assets/img/produto4.png')}
+              source={require('../../assets/img/pinkbag.png')}
               style={estilos.imgOferta}
               resizeMode="contain"
             />

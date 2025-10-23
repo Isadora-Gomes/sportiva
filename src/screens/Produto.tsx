@@ -145,60 +145,15 @@ export default function App() {
               <View style={estilos.notaBox}>
                 <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
               </View>
-              <Text style={estilos.descricao}>
-                Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
-                com conforto — ideal para quem busca presença e segurança no
-                dia a dia.
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes' as never)}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto4.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 99,90</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Camisa flow</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
-              <Text style={estilos.descricao}>
-                Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
-                perfeita para treinos, trabalho ou viagens.
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <View style={estilos.itemProduto}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto3.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 399,90</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Mochila pop</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
             </View>
             <Text style={estilos.descricao}>
               Praticidade e atitude: amplo espaço interno, compartimentos organizados
               e materiais duráveis — ótima para estudos, trabalho e passeios.
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
-        <View style={estilos.itemProduto}>
+        <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes' as never)}>
           <View style={estilos.colPreco}>
             <Image
               source={require('../../assets/img/produto4.png')}
@@ -218,7 +173,9 @@ export default function App() {
               uso casual.
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
+
+        {/* Removed duplicated non-clickable product blocks (Mochila pop & Camisa flow) */}
 
         <View style={estilos.rodape}>
           <Text style={estilos.rodapeTexto}>
