@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from '@react-navigation/native';
 
 export default function Detalhes() {
 	const insets = useSafeAreaInsets();
+	const navigation = useNavigation();
 	const images = [
 		require('../../assets/img/produto4.png'),
 		require('../../assets/img/camisa2.png'),
@@ -25,7 +27,7 @@ export default function Detalhes() {
 		<SafeAreaView style={[styles.container, { paddingTop: insets.top }]}> 
 			<ScrollView contentContainerStyle={styles.content}>
 				<View style={styles.topbar}>
-					<TouchableOpacity style={styles.iconBtn}><Icon name="chevron-left" size={20} color="#fff" /></TouchableOpacity>
+					<TouchableOpacity style={styles.iconBtn} onPress={() => navigation.navigate('Produto' as never)}><Icon name="chevron-left" size={20} color="#fff" /></TouchableOpacity>
 					<TouchableOpacity style={styles.iconBtn}><Icon name="heart" size={20} color="#fff" /></TouchableOpacity>
 				</View>
 
@@ -40,7 +42,7 @@ export default function Detalhes() {
 					<Text style={styles.price}>R$ 199,90</Text>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Icon name="star" size={16} color="#ffd455" />
-						<Text style={styles.rating}>4.9</Text>
+						<Text style={styles.rating}>4.3</Text>
 						<Icon name="comment" size={16} color="#fff" style={{ marginLeft: 10 }} />
 						<Text style={styles.rating}>9</Text>
 					</View>

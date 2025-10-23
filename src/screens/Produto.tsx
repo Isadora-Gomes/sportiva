@@ -3,9 +3,11 @@ import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleS
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 export default function App() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView
@@ -33,7 +35,7 @@ export default function App() {
         <Text style={estilos.textoFiltro}>FILTROS</Text>
       </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes3' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto1.png')}
@@ -54,9 +56,9 @@ export default function App() {
             dia a dia.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes4' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto2.png')}
@@ -76,9 +78,9 @@ export default function App() {
             perfeita para treinos, trabalho ou viagens.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes2' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto3.png')}
@@ -98,9 +100,9 @@ export default function App() {
             e materiais duráveis — ótima para estudos, trabalho e passeios.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto4.png')}
@@ -120,7 +122,7 @@ export default function App() {
             uso casual.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
       <View style={estilos.rodape}>
         <Text style={estilos.rodapeTexto}>
