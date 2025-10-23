@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Modal} from "react-native";
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import Icon from "../components/icon";
@@ -7,6 +7,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function App() {
   const insets = useSafeAreaInsets();
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   const navigation = useNavigation();
 
@@ -18,48 +19,114 @@ export default function App() {
         style={estilos.tela}
         contentContainerStyle={[estilos.conteudoTela]}
       >
-        <ImageBackground
-          source={require('../../assets/img/fundo_produtos.png')}
-          style={estilos.Inicio}
-          imageStyle={{ opacity: 0.5 }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Image source={require('../../assets/img/logoSlim.png')} style={estilos.logo} />
+      <ImageBackground
+        source={require('../../assets/img/fundo_produtos.png')}
+        style={estilos.Inicio}
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <Image
+            source={require('../../assets/img/logoSlim.png')}
+            style={estilos.logo}
+          />
+        <Text style={estilos.tituloInicio}>
+          Encontre aqui os {'\n'}<Text style={estilos.destaque}>melhores</Text> produtos de {'\n'}esporte
+        </Text>
+      </ImageBackground>
+
+      <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
+        <Text style={estilos.textoFiltro}>FILTROS</Text>
+      </TouchableOpacity>
+
+      <Modal visible={filtersVisible} animationType="slide" transparent>
+        <View style={estilos.modalOverlay}>
+          <View style={estilos.modalCard}>
+            <Text style={estilos.modalTitle}>Filtrar produtos</Text>
+
+            <Text style={estilos.modalSection}>Categorias</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Tênis</Text></TouchableOpacity>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Camiseta</Text></TouchableOpacity>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Mochila</Text></TouchableOpacity>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Acessórios</Text></TouchableOpacity>
+            </View>
+
+            <Text style={estilos.modalSection}>Preço</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={estilos.modalText}>Menor que R$100</Text>
+              <Text style={estilos.modalText}>R$100 - R$300</Text>
+              <Text style={estilos.modalText}>Acima de R$300</Text>
+            </View>
+
+            <View style={estilos.modalActions}>
+              <TouchableOpacity style={estilos.modalBtn} onPress={() => setFiltersVisible(false)}>
+                <Text style={estilos.modalBtnText}>Fechar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[estilos.modalBtn, estilos.modalApply]} onPress={() => setFiltersVisible(false)}>
+                <Text style={[estilos.modalBtnText, estilos.modalApplyText]}>Aplicar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+        </View>
+      </Modal>
 
-          <TouchableOpacity
-            style={estilos.menu}
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-          >
-            <Icon name="bars" size={28} color="#fff" />
-          </TouchableOpacity>
-
-
-          <Text style={estilos.tituloInicio}>
-            Encontre aqui os {'\n'}
-            <Text style={estilos.destaque}>melhores</Text> produtos de {'\n'}esporte
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes3' as never)}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={require('../../assets/img/produto1.png')}
+            style={estilos.produto}
+          />
+          <Text style={estilos.preco}>R$ 500,00</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Tênis Vulcan</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
+            </View>
+          </View>
+          <Text style={estilos.descricao}>
+            Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
+            com conforto — ideal para quem busca presença e segurança no
+            dia a dia.
           </Text>
-        </ImageBackground>
+        </View>
+  </TouchableOpacity>
 
-
-        <TouchableOpacity style={estilos.botaoFiltro}>
-          <Text style={estilos.textoFiltro}>FILTROS</Text>
-        </TouchableOpacity>
-
-        <View style={estilos.itemProduto}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto1.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 500,00</Text>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes4' as never)}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={require('../../assets/img/produto2.png')}
+            style={estilos.produto}
+          />
+          <Text style={estilos.preco}>R$ 99,90</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Garrafa térmica</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>4.8 <Icon name="star" size={12} color="#ffd455" /></Text>
+            </View>
           </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Tênis Vulcan</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
+          <Text style={estilos.descricao}>
+            Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
+            perfeita para treinos, trabalho ou viagens.
+          </Text>
+        </View>
+  </TouchableOpacity>
+
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes2' as never)}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={require('../../assets/img/produto3.png')}
+            style={estilos.produto}
+          />
+          <Text style={estilos.preco}>R$ 399,90</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Mochila pop</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
             </View>
             <Text style={estilos.descricao}>
               Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
@@ -68,21 +135,21 @@ export default function App() {
             </Text>
           </View>
         </View>
+  </TouchableOpacity>
 
-        <View style={estilos.itemProduto}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto2.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 99,90</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Garrafa térmica</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>4.8 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes' as never)}>
+        <View style={estilos.colPreco}>
+          <Image
+            source={require('../../assets/img/produto4.png')}
+            style={estilos.produto}
+          />
+          <Text style={estilos.preco}>R$ 99,90</Text>
+        </View>
+        <View style={estilos.conteudo}>
+          <View style={estilos.topoItem}>
+            <Text style={estilos.nome}>Camisa flow</Text>
+            <View style={estilos.notaBox}>
+              <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
             </View>
             <Text style={estilos.descricao}>
               Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
@@ -90,6 +157,7 @@ export default function App() {
             </Text>
           </View>
         </View>
+  </TouchableOpacity>
 
         <View style={estilos.itemProduto}>
           <View style={estilos.colPreco}>
@@ -282,4 +350,29 @@ const estilos = StyleSheet.create({
   imgRodape: {
     marginTop: 20,
   },
+  /* modal styles */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 560,
+    backgroundColor: '#121214',
+    borderRadius: 12,
+    padding: 18,
+  },
+  modalTitle: { color: '#fff', fontSize: 18, fontWeight: '800', marginBottom: 12 },
+  modalSection: { color: '#fff', fontWeight: '700', marginTop: 8, marginBottom: 8 },
+  modalText: { color: '#d0d0d0', fontSize: 13 },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 18 },
+  modalBtn: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8, marginLeft: 8, backgroundColor: '#2b2b2b' },
+  modalBtnText: { color: '#fff', fontWeight: '700' },
+  modalApply: { backgroundColor: '#8000ff' },
+  modalApplyText: { color: '#fff', fontWeight: '900' },
+  chip: { backgroundColor: '#1f1f1f', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, marginBottom: 8 },
+  chipText: { color: '#fff', fontWeight: '700' },
 });

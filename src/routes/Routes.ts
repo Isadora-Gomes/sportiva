@@ -12,6 +12,9 @@ import FimCompra from "../screens/FimCompra";
 import React from "react";
 import { NativeStackNavigationOptions, NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Detalhes from "../screens/Detalhes";
+import Detalhes2 from "../screens/Detalhes2";
+import Detalhes3 from "../screens/Detalhes3";
+import Detalhes4 from "../screens/Detalhes4";
 
 type NativeStackNavigationOptionsCallback = (props: {
     route: RouteProp<ParamListBase, "Cadastro">;
@@ -40,6 +43,9 @@ class Screens {
     Perfil: ParamItem<"Perfil"> = { component: Perfil, options: { headerShown: false } };
     Produto: ParamItem<"Produto"> = { component: Produto, options: { headerShown: false } };
     Detalhes: ParamItem<"Detalhes"> = { component: Detalhes, options: { headerShown: false } };
+    Detalhes2: ParamItem<"Detalhes2"> = { component: Detalhes2, options: { headerShown: false } };
+    Detalhes3: ParamItem<"Detalhes3"> = { component: Detalhes3, options: { headerShown: false } };
+    Detalhes4: ParamItem<"Detalhes4"> = { component: Detalhes4, options: { headerShown: false } };
     InfoEntrega: ParamItem<"InfoEntrega"> = { component: InfoEntrega, options: { headerShown: false } };
     Pagamento: ParamItem<"Pagamento"> = { component: Pagamento, options: { headerShown: false } };
     FimCompra: ParamItem<"FimCompra"> = { component: FimCompra, options: { headerShown: false } };

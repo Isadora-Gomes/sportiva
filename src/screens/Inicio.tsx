@@ -1,13 +1,83 @@
-import React from "react";
-import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from "react";
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, FlatList } from "react-native";
 
+import { LinearGradient } from 'expo-linear-gradient';
+import { NavigationParameter } from "../routes/Routes";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Inicio = ({ }) => {
+const Inicio = ({ navigation }: NavigationParameter) =>  {
   const insets = useSafeAreaInsets();
+  const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
+  const toggleNotificacao = () => {
+    setMostrarNotificacao(!mostrarNotificacao);
+  };
 
+  const redirecionarProduto = () => {
+        navigation.navigate("Produto")
+    }
+
+  const mochilas = [
+    { id: '1', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluegbag.png') },
+    { id: '2', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/pinkbag.png') },
+    { id: '3', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluebag.png') },
+    { id: '4', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/graybagback.png') },
+    { id: '5', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/pinkbag.png') },
+  ];
+
+  const camisas = [
+    { id: '1', nome: 'Camisa Flow', preco: 'R$ 102,29', imagem: require('../../assets/img/graytshirt.png') },
+    { id: '2', nome: 'Camiseta esportiva', preco: 'R$ 88,10', imagem: require('../../assets/img/bluetshirt.png') },
+    { id: '3', nome: 'Camiseta Roblox', preco: 'R$ 95,00', imagem: require('../../assets/img/drakgraytshirt.png') },
+    { id: '4', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/greentshirt.png') },
+    { id: '5', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/bluetshirt.png') },
+    { id: '6', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/graytshirt.png') },
+  ];
+
+   const garrafas = [
+    { id: '1', nome: 'Garrafa Power', preco: 'R$ 78,29', imagem: require('../../assets/img/bluebottle.png') },
+    { id: '2', nome: 'Aqua Sport', preco: 'R$ 88,10', imagem: require('../../assets/img/orangebottle.png') },
+    { id: '3', nome: 'Garrafa Slim', preco: 'R$ 95,00', imagem: require('../../assets/img/blackbluebottle.png') },
+    { id: '4', nome: 'Garrafa Chill', preco: 'R$ 135,80', imagem: require('../../assets/img/blackbottle.png') },
+  ];
+
+   const tenis = [
+    { id: '1', nome: 'Run X Pro', preco: 'R$ 102,29', imagem: require('../../assets/img/pinktenis.png') },
+    { id: '2', nome: 'Pulse Air', preco: 'R$ 88,10', imagem: require('../../assets/img/blacktenis.png') },
+    { id: '3', nome: 'Storm Fit', preco: 'R$ 95,00', imagem: require('../../assets/img/whitetenis.png') },
+    { id: '4', nome: 'Ultra Step', preco: 'R$ 135,80', imagem: require('../../assets/img/orangetenis.png') },
+  ];
+
+  interface ProdutoBase {
+    id: string;
+    nome: string;
+    preco: string;
+    imagem: any;
+  }
+  interface Mochila extends ProdutoBase { }
+  interface Camisa extends ProdutoBase { }
+
+  const CarrosselMochilaItem = ({ item }: { item: Mochila }) => (
+    <View style={[estilos.itemCar, { backgroundColor: '#2a2a2a', borderColor: '#8400FF', borderWidth: 1 }]}>
+      <Image source={item.imagem} style={[estilos.imagemCar, { width: 130, height: 130 }]} />
+      <Text style={[estilos.nomeCar, { color: '#fff' }]}>{item.nome}</Text>
+      <Text style={[estilos.precoCar, { color: '#D5A8FF', fontWeight: '700' }]}>{item.preco}</Text>
+    </View>
+  );
+
+
+  const CarrosselCamisaItem = ({ item }: { item: Camisa }) => (
+    <View style={estilos.divCar}>
+      <View style={estilos.itemCar2}>
+        <Image source={item.imagem} style={[estilos.imagemCar2, { width: 110, height: 110 }]} />
+        <View style={estilos.textprice}>
+          <Text style={[estilos.nomeCar2, { fontSize: 14 }]}>{item.nome}</Text>
+          <Text style={[estilos.precoCar2, { color: '#aaa', marginTop: 2 }]}>{item.preco}</Text>
+        </View>
+      </View>
+    </View>
+
+  );
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#0f0f10' }}
@@ -56,6 +126,14 @@ const Inicio = ({ }) => {
             <Text style={estilos.precoOferta}>R$59,90</Text>
           </View>
 
+          <View style={estilos.cardOferta}>
+            <Image
+              source={require('../../assets/img/graybag.png')}
+              style={estilos.imgOferta}
+              resizeMode="contain"
+            />
+            <Text style={estilos.precoOferta}>R$99,90</Text>
+          </View>
 
           <View style={estilos.cardOferta}>
             <Image
@@ -66,22 +144,14 @@ const Inicio = ({ }) => {
             <Text style={estilos.precoOferta}>R$49,90</Text>
           </View>
 
+
           <View style={estilos.cardOferta}>
             <Image
-              source={require('../../assets/img/produto1.png')}
+              source={require('../../assets/img/produto2.png')}
               style={estilos.imgOferta}
               resizeMode="contain"
             />
             <Text style={estilos.precoOferta}>R$199,90</Text>
-          </View>
-
-          <View style={estilos.cardOferta}>
-            <Image
-              source={require('../../assets/img/produto1.png')}
-              style={estilos.imgOferta}
-              resizeMode="contain"
-            />
-            <Text style={estilos.precoOferta}>R$99,90</Text>
           </View>
         </ScrollView>
 
@@ -150,21 +220,29 @@ const Inicio = ({ }) => {
             </View>
           </View>
         </View>
-        <Text style={estilos.botaoFiltro}>
+
+        <TouchableOpacity style={estilos.botaoFiltro} onPress={(redirecionarProduto)}>
           <Text style={estilos.seeall}>Veja todos os produtos</Text>
-        </Text>
+        </TouchableOpacity>
 
         <View style={estilos.cardsContainer}>
           <View style={estilos.card}>
-            <Image
-              source={require('../../assets/img/tenisCard.png')}
-              style={estilos.cardImage}
-              resizeMode="contain"
-            />
+            <LinearGradient
+              colors={['#8400FF', '#D5A8FF']}
+              style={estilos.cardGradT}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Image
+                source={require('../../assets/img/tenisCard.png')}
+                style={estilos.cardImage}
+                resizeMode="contain"
+              />
+            </LinearGradient>
             <View style={estilos.cardContent}>
               <Text style={estilos.cardTitle}>Ofertas</Text>
               <Text style={estilos.cardSubtitle}>Até 25% OFF em calçados</Text>
-              <TouchableOpacity style={estilos.cardButton}>
+              <TouchableOpacity style={estilos.cardButton} onPress={(redirecionarProduto)}>
                 <Text style={estilos.cardButtonText}>Ver mais</Text>
               </TouchableOpacity>
             </View>
@@ -173,43 +251,94 @@ const Inicio = ({ }) => {
 
           <View style={estilos.card}>
             <View style={estilos.cardContent}>
-              <LinearGradient
-    colors={['#8400FF', '#D5A8FF']}
-    style={estilos.card}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }}
-  ></LinearGradient>
               <Text style={estilos.cardTitle}>Novidades</Text>
               <Text style={estilos.cardSubtitle}>Confira os novos produtos</Text>
-              <TouchableOpacity style={estilos.cardButton}>
+              <TouchableOpacity style={estilos.cardButton} onPress={(redirecionarProduto)}>
                 <Text style={estilos.cardButtonText}>Conferir</Text>
               </TouchableOpacity>
             </View>
-            <Image
-              source={require('../../assets/img/bolsaCard.png')}
-              style={estilos.cardImage}
-              resizeMode="contain"
+            <LinearGradient
+              colors={['#8400FF', '#D5A8FF']}
+              style={estilos.cardGradB}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Image
+                source={require('../../assets/img/bolsaCard.png')}
+                style={estilos.cardImage}
+                resizeMode="contain"
+              />
+            </LinearGradient>
+          </View>
+        </View>
+
+        <View>
+          <TouchableOpacity
+            style={estilos.clickNot}
+            onPress={toggleNotificacao}
+          >
+            <Text style={estilos.textosee}>Notificações</Text>
+          </TouchableOpacity>
+
+          {mostrarNotificacao && (
+            <TouchableOpacity style={estilos.botaoNot}>
+              <Image
+                source={require('../../assets/img/3tshirts.jpg')}
+                style={estilos.tsh3}
+              />
+              <View style={estilos.divNot}>
+                <Text style={estilos.textoNot}>Apenas hoje!</Text>
+                <Text style={estilos.textoNot}>
+                  Aproveite a promoção exclusiva de 3 camisetas por 99,90. Não perca!
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={estilos.containerCar}>
+          <Text style={estilos.tituloCar}>Mochilas</Text>
+          <FlatList<Mochila>
+            data={mochilas}
+            renderItem={({ item }) => <CarrosselMochilaItem item={item} />}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+
+          <Text style={estilos.tituloCar}>Camisas</Text>
+          <View style={estilos.divCar}>
+            <FlatList<Camisa>
+              data={camisas}
+              renderItem={({ item }) => <CarrosselCamisaItem item={item} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+
+          <Text style={estilos.tituloCar}>Garrafas</Text>
+          <FlatList<Mochila>
+            data={garrafas}
+            renderItem={({ item }) => <CarrosselMochilaItem item={item} />}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+
+          <Text style={estilos.tituloCar}>Tênis</Text>
+          <View style={estilos.divCar}>
+            <FlatList<Camisa>
+              data={tenis}
+              renderItem={({ item }) => <CarrosselCamisaItem item={item} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
             />
           </View>
         </View>
 
-
-        <TouchableOpacity style={estilos.botaoNot}>
-          <Image
-            source={require('../../assets/img/3tshirts.jpg')}
-            style={estilos.tsh3}
-          />
-          <View style={estilos.divNot}>
-            <Text style={estilos.textoNot}>Apenas hoje!</Text>
-            <Text style={estilos.textoNot}>Aproveite a promoção exclusiva de 3 camisetas por 99,90. Não perca!</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={estilos.clickNot}>
-          <Text style={estilos.textosee}>Notificações</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={estilos.botaosee}>
+        <TouchableOpacity style={estilos.botaosee} onPress={(redirecionarProduto)}>
           <Text style={estilos.textosee}>Veja todos os produtos</Text>
         </TouchableOpacity>
 
@@ -230,6 +359,76 @@ const Inicio = ({ }) => {
 }
 
 const estilos = StyleSheet.create({
+  containerCar: {
+    flex: 1,
+    padding: 16,
+
+  },
+  tituloCar: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginVertical: 10,
+    marginTop: 20,
+  },
+  itemCar: {
+    marginTop: 10,
+    marginRight: 16,
+    width: 180,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 8,
+    padding: 8,
+    alignItems: 'center',
+  },
+  imagemCar: {
+    width: 120,
+    height: 120,
+    resizeMode: 'contain',
+    marginBottom: 8,
+  },
+  nomeCar: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  precoCar: {
+    color: '#ccc',
+    marginTop: 4,
+  },
+
+  divCar: {
+    borderRadius: 8,
+    backgroundColor: '#3c3c3c',
+    marginTop: 10,
+  },
+  itemCar2: {
+    width: 180,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+  },
+  imagemCar2: {
+    width: 120,
+    height: 120,
+    resizeMode: 'contain',
+    marginBottom: 8,
+    alignItems: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
+  nomeCar2: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'left',
+  },
+  precoCar2: {
+    color: '#ccc',
+    marginTop: 4,
+    textAlign: 'left'
+  },
+  textprice: {
+    marginLeft: 20
+  },
+
   tela: {
     flex: 1,
     backgroundColor: "#0f0f10",
@@ -320,8 +519,9 @@ const estilos = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    alignSelf: "center",
+    alignSelf: 'flex-start',
     marginTop: 20,
+    marginLeft: 10,
   },
   itemProduto: {
     borderRadius: 10,
@@ -410,6 +610,7 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#8400FF'
   },
+
   imgOferta: {
     width: 100,
     height: 100,
@@ -433,16 +634,36 @@ const estilos = StyleSheet.create({
     backgroundColor: '#3c3c3c',
     borderRadius: 12,
     height: 160,
-    padding: 8,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 15
+    marginHorizontal: 10
   },
   cardImage: {
-    width: 100,
-    height: 100,
-    margin: 16,
+    width: 110,
+    height: 110,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+flex: 1,
+  },
+  cardGradT: {
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 0,
+    height: 160,
+    flex: 1,
+    alignItems: 'center',
+  },
+  cardGradB: {
+    borderTopLeftRadius: 60,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 12,
+    height: 160,
+    marginLeft: 10,
+    flex: 1,
+    alignItems: 'center',
   },
   cardContent: {
     marginLeft: 20
@@ -458,6 +679,7 @@ const estilos = StyleSheet.create({
     fontSize: 16,
     textAlign: 'left',
     marginBottom: 10,
+    marginRight: 10,
   },
   cardButton: {
     backgroundColor: '#8400FF',
@@ -466,12 +688,10 @@ const estilos = StyleSheet.create({
     paddingHorizontal: 20,
     width: 100,
   },
-
   cardButtonText: {
     color: '#fff',
     fontWeight: '700',
   },
-
 
 });
 
