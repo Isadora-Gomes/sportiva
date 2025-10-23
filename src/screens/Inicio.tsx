@@ -18,20 +18,34 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
     }
 
   const mochilas = [
-    { id: '1', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/produto4.png') },
-    { id: '2', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/produto4.png') },
-    { id: '3', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/produto4.png') },
-    { id: '4', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/produto4.png') },
-    { id: '5', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/produto4.png') },
+    { id: '1', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluegbag.png') },
+    { id: '2', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/pinkbag.png') },
+    { id: '3', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluebag.png') },
+    { id: '4', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/graybagback.png') },
+    { id: '5', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/pinkbag.png') },
   ];
 
   const camisas = [
-    { id: '1', nome: 'Camisa Flow', preco: 'R$ 102,29', imagem: require('../../assets/img/produto4.png') },
-    { id: '2', nome: 'Camiseta esportiva', preco: 'R$ 88,10', imagem: require('../../assets/img/produto4.png') },
-    { id: '3', nome: 'Camiseta Roblox', preco: 'R$ 95,00', imagem: require('../../assets/img/produto4.png') },
-    { id: '4', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/produto4.png') },
-    { id: '5', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/produto4.png') },
-    { id: '6', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/produto4.png') },
+    { id: '1', nome: 'Camisa Flow', preco: 'R$ 102,29', imagem: require('../../assets/img/graytshirt.png') },
+    { id: '2', nome: 'Camiseta esportiva', preco: 'R$ 88,10', imagem: require('../../assets/img/bluetshirt.png') },
+    { id: '3', nome: 'Camiseta Roblox', preco: 'R$ 95,00', imagem: require('../../assets/img/drakgraytshirt.png') },
+    { id: '4', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/greentshirt.png') },
+    { id: '5', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/bluetshirt.png') },
+    { id: '6', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/graytshirt.png') },
+  ];
+
+   const garrafas = [
+    { id: '1', nome: 'Garrafa Power', preco: 'R$ 78,29', imagem: require('../../assets/img/bluebottle.png') },
+    { id: '2', nome: 'Aqua Sport', preco: 'R$ 88,10', imagem: require('../../assets/img/orangebottle.png') },
+    { id: '3', nome: 'Garrafa Slim', preco: 'R$ 95,00', imagem: require('../../assets/img/blackbluebottle.png') },
+    { id: '4', nome: 'Garrafa Chill', preco: 'R$ 135,80', imagem: require('../../assets/img/blackbottle.png') },
+  ];
+
+   const tenis = [
+    { id: '1', nome: 'Run X Pro', preco: 'R$ 102,29', imagem: require('../../assets/img/pinktenis.png') },
+    { id: '2', nome: 'Pulse Air', preco: 'R$ 88,10', imagem: require('../../assets/img/blacktenis.png') },
+    { id: '3', nome: 'Storm Fit', preco: 'R$ 95,00', imagem: require('../../assets/img/whitetenis.png') },
+    { id: '4', nome: 'Ultra Step', preco: 'R$ 135,80', imagem: require('../../assets/img/orangetenis.png') },
   ];
 
   interface ProdutoBase {
@@ -305,7 +319,7 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
 
           <Text style={estilos.tituloCar}>Garrafas</Text>
           <FlatList<Mochila>
-            data={mochilas}
+            data={garrafas}
             renderItem={({ item }) => <CarrosselMochilaItem item={item} />}
             keyExtractor={(item) => item.id}
             horizontal
@@ -315,7 +329,7 @@ const Inicio = ({ navigation }: NavigationParameter) =>  {
           <Text style={estilos.tituloCar}>Tênis</Text>
           <View style={estilos.divCar}>
             <FlatList<Camisa>
-              data={camisas}
+              data={tenis}
               renderItem={({ item }) => <CarrosselCamisaItem item={item} />}
               keyExtractor={(item) => item.id}
               horizontal
