@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Modal, TextInput, Pressable, Alert } from "react-native";
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 export default function Carrinho() {
   const navigation = useNavigation();
@@ -60,13 +60,28 @@ export default function Carrinho() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#8000ff", paddingTop: insets.top }}>
       <ScrollView contentContainerStyle={estilos.conteudoTela}>
-            <View style={estilos.header}>
-                <Text style={estilos.headerTitulo}>Carrinho</Text>
-            </View>
+        <View style={estilos.header}>
+          <Text style={estilos.headerTitulo}>Carrinho</Text>
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              top: insets.top + 5,
+              right: 10,
+              zIndex: 10,
+              padding: 8,
+              borderRadius: 8,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Icon name="bars" size={26} color="#fff" />
+          </TouchableOpacity>
+        </View>
         <View style={estilos.itemCarrinho}>
-            <View style={estilos.imgCarrinho}>
-                <Image source={require('../../assets/img/produto3.png')} style={estilos.imgProduto} />
-            </View>
+          <View style={estilos.imgCarrinho}>
+            <Image source={require('../../assets/img/produto3.png')} style={estilos.imgProduto} />
+          </View>
           <View style={estilos.infoProduto}>
             <Text style={estilos.nomeProduto}>MOCHILA POP</Text>
             <Text style={estilos.detProduto}>Dimensões: 38 cm (A) x 28 cm (L) x 13 cm (P)</Text>
@@ -84,18 +99,18 @@ export default function Carrinho() {
             </View>
           </View>
           <TouchableOpacity style={estilos.removeBtn}>
-            <Icon name="x" style={estilos.icon}  />
+            <Icon name="x" style={estilos.icon} />
             <TouchableOpacity onPress={() => setShowModal(true)}>
-              <Icon name="plus" style={estilos.icon2}  />
+              <Icon name="plus" style={estilos.icon2} />
             </TouchableOpacity>
           </TouchableOpacity>
         </View>
 
         {/* Garrafa Térmica */}
         <View style={estilos.itemCarrinho}>
-            <View style={estilos.imgCarrinho}>
-               <Image source={require('../../assets/img/produto2.png')} style={estilos.imgProduto} />
-            </View>
+          <View style={estilos.imgCarrinho}>
+            <Image source={require('../../assets/img/produto2.png')} style={estilos.imgProduto} />
+          </View>
           <View style={estilos.infoProduto}>
             <Text style={estilos.nomeProduto}>GARRAFA TÉRMICA</Text>
             <Text style={estilos.detProduto}>500ml</Text>
@@ -115,7 +130,7 @@ export default function Carrinho() {
           <TouchableOpacity style={estilos.removeBtn}>
             <Icon name="x" style={estilos.icon} />
             <TouchableOpacity onPress={() => setShowModal(true)}>
-              <Icon name="plus" style={estilos.icon2}  />
+              <Icon name="plus" style={estilos.icon2} />
             </TouchableOpacity>
           </TouchableOpacity>
         </View>
@@ -152,7 +167,7 @@ export default function Carrinho() {
           <Text style={estilos.subtotalTxt}>Subtotal R$ {subtotal.toFixed(2)}</Text>
           <TouchableOpacity style={estilos.finalizarBtn}>
             <Text style={estilos.finalizarTxt}
-            onPress={() => navigation.navigate('InfoEntrega' as never)}>
+              onPress={() => navigation.navigate('InfoEntrega' as never)}>
               Concluir pedido</Text>
           </TouchableOpacity>
         </View>
@@ -307,14 +322,14 @@ const estilos = StyleSheet.create({
     padding: 12,
     alignItems: "center",
   },
-  imgCarrinho:{
+  imgCarrinho: {
     backgroundColor: "#3C3C3C",
     height: 100,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     marginRight: 12,
-    flex:1,
+    flex: 1,
     maxWidth: 80,
   },
   imgProduto: {
@@ -330,12 +345,12 @@ const estilos = StyleSheet.create({
     color: "#fff",
     marginLeft: 10,
   },
-    icon2: {
+  icon2: {
     fontSize: 15,
     bottom: 52,
     right: 20,
     color: "#fff",
-    
+
   },
 
   infoProduto: {
