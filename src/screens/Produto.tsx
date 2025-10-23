@@ -1,143 +1,164 @@
 import React from "react";
-import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet} from "react-native";
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 // import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function App() {
   const insets = useSafeAreaInsets();
 
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView
-        style={{ flex: 1, backgroundColor: '#0f0f10' }}
-      >
+      style={{ flex: 1, backgroundColor: '#0f0f10' }}
+    >
       <ScrollView
         style={estilos.tela}
         contentContainerStyle={[estilos.conteudoTela]}
       >
-      <ImageBackground
-        source={require('../../assets/img/fundo_produtos.png')}
-        style={estilos.Inicio}
-        imageStyle={{ opacity: 0.5 }}
-      >
-        <Image
-            source={require('../../assets/img/logoSlim.png')}
-            style={estilos.logo}
-          />
-        <Text style={estilos.tituloInicio}>
-          Encontre aqui os {'\n'}<Text style={estilos.destaque}>melhores</Text> produtos de {'\n'}esporte
-        </Text>
-      </ImageBackground>
-
-      <TouchableOpacity style={estilos.botaoFiltro}>
-        <Text style={estilos.textoFiltro}>FILTROS</Text>
-      </TouchableOpacity>
-
-      <View style={estilos.itemProduto}>
-        <View style={estilos.colPreco}>
-          <Image
-            source={require('../../assets/img/produto1.png')}
-            style={estilos.produto}
-          />
-          <Text style={estilos.preco}>R$ 500,00</Text>
-        </View>
-        <View style={estilos.conteudo}>
-          <View style={estilos.topoItem}>
-            <Text style={estilos.nome}>Tênis Vulcan</Text>
-            <View style={estilos.notaBox}>
-              <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
-            </View>
+        <ImageBackground
+          source={require('../../assets/img/fundo_produtos.png')}
+          style={estilos.Inicio}
+          imageStyle={{ opacity: 0.5 }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Image source={require('../../assets/img/logoSlim.png')} style={estilos.logo} />
           </View>
-          <Text style={estilos.descricao}>
-            Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
-            com conforto — ideal para quem busca presença e segurança no
-            dia a dia.
-          </Text>
-        </View>
-      </View>
 
-      <View style={estilos.itemProduto}>
-        <View style={estilos.colPreco}>
-          <Image
-            source={require('../../assets/img/produto2.png')}
-            style={estilos.produto}
-          />
-          <Text style={estilos.preco}>R$ 99,90</Text>
-        </View>
-        <View style={estilos.conteudo}>
-          <View style={estilos.topoItem}>
-            <Text style={estilos.nome}>Garrafa térmica</Text>
-            <View style={estilos.notaBox}>
-              <Text style={estilos.notaTexto}>4.8 <Icon name="star" size={12} color="#ffd455" /></Text>
-            </View>
+          <TouchableOpacity
+            style={estilos.menu}
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Icon name="bars" size={28} color="#fff" />
+          </TouchableOpacity>
+
+
+          <Text style={estilos.tituloInicio}>
+            Encontre aqui os {'\n'}
+            <Text style={estilos.destaque}>melhores</Text> produtos de {'\n'}esporte
+          </Text>
+        </ImageBackground>
+
+
+        <TouchableOpacity style={estilos.botaoFiltro}>
+          <Text style={estilos.textoFiltro}>FILTROS</Text>
+        </TouchableOpacity>
+
+        <View style={estilos.itemProduto}>
+          <View style={estilos.colPreco}>
+            <Image
+              source={require('../../assets/img/produto1.png')}
+              style={estilos.produto}
+            />
+            <Text style={estilos.preco}>R$ 500,00</Text>
           </View>
-          <Text style={estilos.descricao}>
-            Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
-            perfeita para treinos, trabalho ou viagens.
-          </Text>
-        </View>
-      </View>
-
-      <View style={estilos.itemProduto}>
-        <View style={estilos.colPreco}>
-          <Image
-            source={require('../../assets/img/produto3.png')}
-            style={estilos.produto}
-          />
-          <Text style={estilos.preco}>R$ 399,90</Text>
-        </View>
-        <View style={estilos.conteudo}>
-          <View style={estilos.topoItem}>
-            <Text style={estilos.nome}>Mochila pop</Text>
-            <View style={estilos.notaBox}>
-              <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
+          <View style={estilos.conteudo}>
+            <View style={estilos.topoItem}>
+              <Text style={estilos.nome}>Tênis Vulcan</Text>
+              <View style={estilos.notaBox}>
+                <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
+              </View>
             </View>
+            <Text style={estilos.descricao}>
+              Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
+              com conforto — ideal para quem busca presença e segurança no
+              dia a dia.
+            </Text>
           </View>
-          <Text style={estilos.descricao}>
-            Praticidade e atitude: amplo espaço interno, compartimentos organizados
-            e materiais duráveis — ótima para estudos, trabalho e passeios.
-          </Text>
         </View>
-      </View>
 
-      <View style={estilos.itemProduto}>
-        <View style={estilos.colPreco}>
-          <Image
-            source={require('../../assets/img/produto4.png')}
-            style={estilos.produto}
-          />
-          <Text style={estilos.preco}>R$ 99,90</Text>
-        </View>
-        <View style={estilos.conteudo}>
-          <View style={estilos.topoItem}>
-            <Text style={estilos.nome}>Camisa flow</Text>
-            <View style={estilos.notaBox}>
-              <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
+        <View style={estilos.itemProduto}>
+          <View style={estilos.colPreco}>
+            <Image
+              source={require('../../assets/img/produto2.png')}
+              style={estilos.produto}
+            />
+            <Text style={estilos.preco}>R$ 99,90</Text>
+          </View>
+          <View style={estilos.conteudo}>
+            <View style={estilos.topoItem}>
+              <Text style={estilos.nome}>Garrafa térmica</Text>
+              <View style={estilos.notaBox}>
+                <Text style={estilos.notaTexto}>4.8 <Icon name="star" size={12} color="#ffd455" /></Text>
+              </View>
             </View>
+            <Text style={estilos.descricao}>
+              Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
+              perfeita para treinos, trabalho ou viagens.
+            </Text>
           </View>
-          <Text style={estilos.descricao}>
-            Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
-            uso casual.
-          </Text>
         </View>
-      </View>
 
-      <View style={estilos.rodape}>
-        <Text style={estilos.rodapeTexto}>
-          Os melhores produtos esportivos, ofertas exclusivas e tudo o que você precisa
-          para turbinar sua performance.
-        </Text>
-        <Image
+        <View style={estilos.itemProduto}>
+          <View style={estilos.colPreco}>
+            <Image
+              source={require('../../assets/img/produto3.png')}
+              style={estilos.produto}
+            />
+            <Text style={estilos.preco}>R$ 399,90</Text>
+          </View>
+          <View style={estilos.conteudo}>
+            <View style={estilos.topoItem}>
+              <Text style={estilos.nome}>Mochila pop</Text>
+              <View style={estilos.notaBox}>
+                <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
+              </View>
+            </View>
+            <Text style={estilos.descricao}>
+              Praticidade e atitude: amplo espaço interno, compartimentos organizados
+              e materiais duráveis — ótima para estudos, trabalho e passeios.
+            </Text>
+          </View>
+        </View>
+
+        <View style={estilos.itemProduto}>
+          <View style={estilos.colPreco}>
+            <Image
+              source={require('../../assets/img/produto4.png')}
+              style={estilos.produto}
+            />
+            <Text style={estilos.preco}>R$ 99,90</Text>
+          </View>
+          <View style={estilos.conteudo}>
+            <View style={estilos.topoItem}>
+              <Text style={estilos.nome}>Camisa flow</Text>
+              <View style={estilos.notaBox}>
+                <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
+              </View>
+            </View>
+            <Text style={estilos.descricao}>
+              Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
+              uso casual.
+            </Text>
+          </View>
+        </View>
+
+        <View style={estilos.rodape}>
+          <Text style={estilos.rodapeTexto}>
+            Os melhores produtos esportivos, ofertas exclusivas e tudo o que você precisa
+            para turbinar sua performance.
+          </Text>
+          <Image
             source={require('../../assets/img/logo2.png')}
             style={estilos.imgRodape}
           />
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const estilos = StyleSheet.create({
+  menu: {
+    position: 'absolute',
+    top: 15,
+    right: 60,
+    zIndex: 10,
+    borderRadius: 10,
+    padding: 8,
+  },
   tela: {
     flex: 1,
     backgroundColor: "#0f0f10",
@@ -209,7 +230,7 @@ const estilos = StyleSheet.create({
     height: 56,
     marginBottom: 8,
     borderRadius: 6,
-    
+
   },
   preco: {
     color: "#ffffffff",
