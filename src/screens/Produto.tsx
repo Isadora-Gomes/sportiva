@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Modal} from "react-native";
 // import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
 export default function App() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
   const [filtersVisible, setFiltersVisible] = useState(false);
+
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView
-        style={{ flex: 1, backgroundColor: '#0f0f10' }}
-      >
+      style={{ flex: 1, backgroundColor: '#0f0f10' }}
+    >
       <ScrollView
         style={estilos.tela}
         contentContainerStyle={[estilos.conteudoTela]}
@@ -127,11 +128,12 @@ export default function App() {
             <View style={estilos.notaBox}>
               <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
             </View>
+            <Text style={estilos.descricao}>
+              Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
+              com conforto — ideal para quem busca presença e segurança no
+              dia a dia.
+            </Text>
           </View>
-          <Text style={estilos.descricao}>
-            Praticidade e atitude: amplo espaço interno, compartimentos organizados
-            e materiais duráveis — ótima para estudos, trabalho e passeios.
-          </Text>
         </View>
   </TouchableOpacity>
 
@@ -149,30 +151,82 @@ export default function App() {
             <View style={estilos.notaBox}>
               <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
             </View>
+            <Text style={estilos.descricao}>
+              Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
+              perfeita para treinos, trabalho ou viagens.
+            </Text>
           </View>
-          <Text style={estilos.descricao}>
-            Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
-            uso casual.
-          </Text>
         </View>
   </TouchableOpacity>
 
-      <View style={estilos.rodape}>
-        <Text style={estilos.rodapeTexto}>
-          Os melhores produtos esportivos, ofertas exclusivas e tudo o que você precisa
-          para turbinar sua performance.
-        </Text>
-        <Image
+        <View style={estilos.itemProduto}>
+          <View style={estilos.colPreco}>
+            <Image
+              source={require('../../assets/img/produto3.png')}
+              style={estilos.produto}
+            />
+            <Text style={estilos.preco}>R$ 399,90</Text>
+          </View>
+          <View style={estilos.conteudo}>
+            <View style={estilos.topoItem}>
+              <Text style={estilos.nome}>Mochila pop</Text>
+              <View style={estilos.notaBox}>
+                <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
+              </View>
+            </View>
+            <Text style={estilos.descricao}>
+              Praticidade e atitude: amplo espaço interno, compartimentos organizados
+              e materiais duráveis — ótima para estudos, trabalho e passeios.
+            </Text>
+          </View>
+        </View>
+
+        <View style={estilos.itemProduto}>
+          <View style={estilos.colPreco}>
+            <Image
+              source={require('../../assets/img/produto4.png')}
+              style={estilos.produto}
+            />
+            <Text style={estilos.preco}>R$ 99,90</Text>
+          </View>
+          <View style={estilos.conteudo}>
+            <View style={estilos.topoItem}>
+              <Text style={estilos.nome}>Camisa flow</Text>
+              <View style={estilos.notaBox}>
+                <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
+              </View>
+            </View>
+            <Text style={estilos.descricao}>
+              Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
+              uso casual.
+            </Text>
+          </View>
+        </View>
+
+        <View style={estilos.rodape}>
+          <Text style={estilos.rodapeTexto}>
+            Os melhores produtos esportivos, ofertas exclusivas e tudo o que você precisa
+            para turbinar sua performance.
+          </Text>
+          <Image
             source={require('../../assets/img/logo2.png')}
             style={estilos.imgRodape}
           />
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const estilos = StyleSheet.create({
+  menu: {
+    position: 'absolute',
+    top: 15,
+    right: 60,
+    zIndex: 10,
+    borderRadius: 10,
+    padding: 8,
+  },
   tela: {
     flex: 1,
     backgroundColor: "#0f0f10",
@@ -244,7 +298,7 @@ const estilos = StyleSheet.create({
     height: 56,
     marginBottom: 8,
     borderRadius: 6,
-    
+
   },
   preco: {
     color: "#ffffffff",
