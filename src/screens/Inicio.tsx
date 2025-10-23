@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationParameter } from "../routes/Routes";
 import Icon from 'react-native-vector-icons/Feather';
@@ -11,7 +12,12 @@ const Inicio = ({ navigation }: NavigationParameter) => {
   const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
   const toggleNotificacao = () => setMostrarNotificacao(!mostrarNotificacao);
 
-  const redirecionarProduto = () => navigation.navigate("Produto");
+  const redirecionarProduto = () => {
+    navigation.navigate("Produto")
+  }
+
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
 
   const mochilas = [
     { id: '1', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluegbag.png') },
@@ -330,6 +336,23 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           </View>
         </View>
 
+        <View style={estilos.switchContainer}>
+          <Text style={[estilos.switchLabel, { color: isDarkMode ? '#fff' : '#000' }]}>
+            {isDarkMode ? 'Modo Escuro' : 'Modo Claro'}
+          </Text>
+
+          <Switch
+            value={isDarkMode}
+            onValueChange={setIsDarkMode}
+            trackColor={{ false: '#767577', true: '#8400FF' }}
+            thumbColor={isDarkMode ? '#fff' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            style={estilos.switch}
+          />
+        </View>
+
+
+
         <TouchableOpacity style={estilos.botaosee} onPress={(redirecionarProduto)}>
           <Text style={estilos.textosee}>Veja todos os produtos</Text>
         </TouchableOpacity>
@@ -365,7 +388,6 @@ const estilos = StyleSheet.create({
   containerCar: {
     flex: 1,
     padding: 16,
-
   },
   tituloCar: {
     fontSize: 22,
@@ -695,6 +717,24 @@ const estilos = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
   },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+
+  switchLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginRight: 10,
+  },
+
+  switch: {
+    transform: [{ scale: 1.2 }],
+  },
+
 
 });
 
