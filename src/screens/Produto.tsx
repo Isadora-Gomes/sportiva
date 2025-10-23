@@ -1,11 +1,14 @@
-import React from "react";
-import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet} from "react-native";
+import React, { useState } from "react";
+import {View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Modal} from "react-native";
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 export default function App() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   return (
     <SafeAreaView
@@ -29,11 +32,43 @@ export default function App() {
         </Text>
       </ImageBackground>
 
-      <TouchableOpacity style={estilos.botaoFiltro}>
+      <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
         <Text style={estilos.textoFiltro}>FILTROS</Text>
       </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <Modal visible={filtersVisible} animationType="slide" transparent>
+        <View style={estilos.modalOverlay}>
+          <View style={estilos.modalCard}>
+            <Text style={estilos.modalTitle}>Filtrar produtos</Text>
+
+            <Text style={estilos.modalSection}>Categorias</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Tênis</Text></TouchableOpacity>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Camiseta</Text></TouchableOpacity>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Mochila</Text></TouchableOpacity>
+              <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Acessórios</Text></TouchableOpacity>
+            </View>
+
+            <Text style={estilos.modalSection}>Preço</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={estilos.modalText}>Menor que R$100</Text>
+              <Text style={estilos.modalText}>R$100 - R$300</Text>
+              <Text style={estilos.modalText}>Acima de R$300</Text>
+            </View>
+
+            <View style={estilos.modalActions}>
+              <TouchableOpacity style={estilos.modalBtn} onPress={() => setFiltersVisible(false)}>
+                <Text style={estilos.modalBtnText}>Fechar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[estilos.modalBtn, estilos.modalApply]} onPress={() => setFiltersVisible(false)}>
+                <Text style={[estilos.modalBtnText, estilos.modalApplyText]}>Aplicar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes3' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto1.png')}
@@ -54,9 +89,9 @@ export default function App() {
             dia a dia.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes4' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto2.png')}
@@ -76,9 +111,9 @@ export default function App() {
             perfeita para treinos, trabalho ou viagens.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes2' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto3.png')}
@@ -98,9 +133,9 @@ export default function App() {
             e materiais duráveis — ótima para estudos, trabalho e passeios.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
-      <View style={estilos.itemProduto}>
+      <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes' as never)}>
         <View style={estilos.colPreco}>
           <Image
             source={require('../../assets/img/produto4.png')}
@@ -120,7 +155,7 @@ export default function App() {
             uso casual.
           </Text>
         </View>
-      </View>
+  </TouchableOpacity>
 
       <View style={estilos.rodape}>
         <Text style={estilos.rodapeTexto}>
@@ -261,4 +296,29 @@ const estilos = StyleSheet.create({
   imgRodape: {
     marginTop: 20,
   },
+  /* modal styles */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 560,
+    backgroundColor: '#121214',
+    borderRadius: 12,
+    padding: 18,
+  },
+  modalTitle: { color: '#fff', fontSize: 18, fontWeight: '800', marginBottom: 12 },
+  modalSection: { color: '#fff', fontWeight: '700', marginTop: 8, marginBottom: 8 },
+  modalText: { color: '#d0d0d0', fontSize: 13 },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 18 },
+  modalBtn: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8, marginLeft: 8, backgroundColor: '#2b2b2b' },
+  modalBtnText: { color: '#fff', fontWeight: '700' },
+  modalApply: { backgroundColor: '#8000ff' },
+  modalApplyText: { color: '#fff', fontWeight: '900' },
+  chip: { backgroundColor: '#1f1f1f', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, marginBottom: 8 },
+  chipText: { color: '#fff', fontWeight: '700' },
 });

@@ -1,4 +1,4 @@
-// camisa
+// tenis
 import React, { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Icon from "../components/icon";
@@ -9,16 +9,16 @@ export default function Detalhes() {
 	const insets = useSafeAreaInsets();
 	const navigation = useNavigation();
 	const images = [
-		require('../../assets/img/produto4.png'),
-		require('../../assets/img/camisa2.png'),
-		require('../../assets/img/camisa3.png'),
+		require('../../assets/img/produto1.png'),
+		require('../../assets/img/tenis1.png'),
+		require('../../assets/img/tenis2.png'),
 	];
 	const [index, setIndex] = useState(0);
 	const [selectedColor, setSelectedColor] = useState<string | null>('Roxo');
 	const [selectedSize, setSelectedSize] = useState<string | null>('M');
 
 	const colors = ['Roxo', 'Rosa', 'Vermelho', 'Verde', 'Azul', 'Amarelo'];
-	const sizes = ['P','M','G','GG'];
+	const sizes = ['36','37','38','39','40','41'];
 
 	function prev() { setIndex(i => Math.max(0, i - 1)); }
 	function next() { setIndex(i => Math.min(images.length -1, i + 1)); }
@@ -37,18 +37,20 @@ export default function Detalhes() {
 					<TouchableOpacity style={[styles.carouselNav, { right: 8 }]} onPress={next}><Icon name="chevron-right" size={18} color="#fff" /></TouchableOpacity>
 				</View>
 
-				<Text style={styles.title}>CAMISETA FLOW</Text>
+				<Text style={styles.title}>TÊNIS VULCAN</Text>
 				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-					<Text style={styles.price}>R$ 199,90</Text>
+					<Text style={styles.price}>R$ 500,00</Text>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Icon name="star" size={16} color="#ffd455" />
-						<Text style={styles.rating}>4.3</Text>
+						<Text style={styles.rating}>4.5</Text>
 						<Icon name="comment" size={16} color="#fff" style={{ marginLeft: 10 }} />
 						<Text style={styles.rating}>9</Text>
 					</View>
 				</View>
 
-				<Text style={styles.description}>Camiseta Flow moderna, tecido mais confortável e de qualidade para todas as práticas esportivas.</Text>
+				<Text style={styles.description}>Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
+            com conforto — ideal para quem busca presença e segurança no
+            dia a dia.</Text>
 
 				<Text style={styles.sectionTitle}>CORES</Text>
 				<View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
