@@ -54,23 +54,11 @@ const Inicio = ({ navigation }: NavigationParameter) => {
   interface Mochila extends ProdutoBase { }
   interface Camisa extends ProdutoBase { }
 
-  const CarrosselMochilaItem = ({ item }: { item: Mochila }) => (
-    <View style={[estilos.itemCar, { backgroundColor: '#2a2a2a', borderColor: '#8400FF', borderWidth: 1 }]}>
-      <Image source={item.imagem} style={[estilos.imagemCar, { width: 130, height: 130 }]} />
+  const CarroselProdutos = ({ item }: { item: Mochila }) => (
+    <View style={[estilos.itemCar, { backgroundColor: '#2a2a2a', borderColor: '#8400FF', borderWidth: 1,}]}>
+      <Image source={item.imagem} style={[estilos.imagemCar, { width: 130, height: 130, borderTopLeftRadius: 8, borderTopRightRadius: 8, }]} />
       <Text style={[estilos.nomeCar, { color: '#fff' }]}>{item.nome}</Text>
       <Text style={[estilos.precoCar, { color: '#D5A8FF', fontWeight: '700' }]}>{item.preco}</Text>
-    </View>
-  );
-
-  const CarrosselCamisaItem = ({ item }: { item: Camisa }) => (
-    <View style={estilos.divCar}>
-      <View style={estilos.itemCar2}>
-        <Image source={item.imagem} style={[estilos.imagemCar2, { width: 110, height: 110 }]} />
-        <View style={estilos.textprice}>
-          <Text style={[estilos.nomeCar2, { fontSize: 14 }]}>{item.nome}</Text>
-          <Text style={[estilos.precoCar2, { color: '#aaa', marginTop: 2 }]}>{item.preco}</Text>
-        </View>
-      </View>
     </View>
   );
 
@@ -298,42 +286,38 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           <Text style={estilos.tituloCar}>Mochilas</Text>
           <FlatList<Mochila>
             data={mochilas}
-            renderItem={({ item }) => <CarrosselMochilaItem item={item} />}
+            renderItem={({ item }) => <CarroselProdutos item={item} />}
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
           />
 
           <Text style={estilos.tituloCar}>Camisas</Text>
-          <View style={estilos.divCar}>
-            <FlatList<Camisa>
-              data={camisas}
-              renderItem={({ item }) => <CarrosselCamisaItem item={item} />}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
+          <FlatList<Camisa>
+            data={camisas}
+            renderItem={({ item }) => <CarroselProdutos item={item} />}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
 
           <Text style={estilos.tituloCar}>Garrafas</Text>
           <FlatList<Mochila>
             data={garrafas}
-            renderItem={({ item }) => <CarrosselMochilaItem item={item} />}
+            renderItem={({ item }) => <CarroselProdutos item={item} />}
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
           />
 
           <Text style={estilos.tituloCar}>Tênis</Text>
-          <View style={estilos.divCar}>
-            <FlatList<Camisa>
-              data={tenis}
-              renderItem={({ item }) => <CarrosselCamisaItem item={item} />}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
+          <FlatList<Camisa>
+            data={tenis}
+            renderItem={({ item }) => <CarroselProdutos item={item} />}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
         </View>
 
         <View style={estilos.switchContainer}>

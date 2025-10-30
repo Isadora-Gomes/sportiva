@@ -15,6 +15,8 @@ import Detalhes from "../screens/Detalhes";
 import Detalhes2 from "../screens/Detalhes2";
 import Detalhes3 from "../screens/Detalhes3";
 import Detalhes4 from "../screens/Detalhes4";
+import HistoricoCompras from "../screens/HistoricoCompras";
+import TelaInicio from "../screens/TelaInicio";
 
 type NativeStackNavigationOptionsCallback = (props: {
     route: RouteProp<ParamListBase, "Cadastro">;
@@ -49,6 +51,8 @@ class Screens {
     InfoEntrega: ParamItem<"InfoEntrega"> = { component: InfoEntrega, options: { headerShown: false } };
     Pagamento: ParamItem<"Pagamento"> = { component: Pagamento, options: { headerShown: false } };
     FimCompra: ParamItem<"FimCompra"> = { component: FimCompra, options: { headerShown: false } };
+    HistoricoCompras: ParamItem<"HistoricoCompras"> = { component: HistoricoCompras, options: { headerShown: false } };
+    TelaInicio: ParamItem<"TelaInicio"> = { component: TelaInicio, options: { headerShown: false } };
 
     static readonly instance = new Screens();
 }
