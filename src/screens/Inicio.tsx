@@ -30,7 +30,7 @@ const Inicio = ({ navigation }: NavigationParameter) => {
   const camisas = [
     { id: '1', nome: 'Camisa Flow', preco: 'R$ 102,29', imagem: require('../../assets/img/graytshirt.png') },
     { id: '2', nome: 'Camiseta esportiva', preco: 'R$ 88,10', imagem: require('../../assets/img/bluetshirt.png') },
-    { id: '3', nome: 'Camiseta Roblox', preco: 'R$ 95,00', imagem: require('../../assets/img/drakgraytshirt.png') },
+    { id: '3', nome: 'Camiseta cinza', preco: 'R$ 95,00', imagem: require('../../assets/img/drakgraytshirt.png') },
     { id: '4', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/greentshirt.png') },
     { id: '5', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/bluetshirt.png') },
     { id: '6', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/graytshirt.png') },
@@ -117,7 +117,7 @@ const Inicio = ({ navigation }: NavigationParameter) => {
 
           <View style={estilos.cardOferta}>
             <Image
-              source={require('../../assets/img/pinkbag.png')}
+              source={require('../../assets/img/produto4.png')}
               style={estilos.imgOferta}
               resizeMode="contain"
             />
@@ -336,20 +336,20 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           </View>
         </View>
 
-        <View style={estilos.switchContainer}>
+        {/* <View style={estilos.switchContainer}>
           <Text style={[estilos.switchLabel, { color: isDarkMode ? '#fff' : '#000' }]}>
             {isDarkMode ? 'Modo Escuro' : 'Modo Claro'}
-          </Text>
+          </Text> */}
 
-          <Switch
+          {/* <Switch
             value={isDarkMode}
             onValueChange={setIsDarkMode}
             trackColor={{ false: '#767577', true: '#8400FF' }}
             thumbColor={isDarkMode ? '#fff' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
             style={estilos.switch}
-          />
-        </View>
+          /> */}
+        {/* </View> */}
 
 
 

@@ -16,7 +16,7 @@ const InfoEntrega = () => {
     return (
         <ScrollView style={estilos.container} contentContainerStyle={{ alignItems: 'center' }}>
             <View style={estilos.topo}>
-                <TouchableOpacity style={estilos.iconVoltar}>
+                <TouchableOpacity style={estilos.iconVoltar} onPress={() => navigation.navigate('Carrinho' as never)}>
                     <Icon name="chevron-left" size={20} color="#fff" />
                 </TouchableOpacity>
                 <Image source={require('../../assets/img/logo2.png')} />
@@ -84,10 +84,11 @@ const InfoEntrega = () => {
                 onChangeText={setObs}
             />
 
-            <TouchableOpacity style={estilos.botaoContinuar}>
-                <Text style={estilos.textoBotao}
+            <TouchableOpacity
+                style={estilos.botaoContinuar}
                 onPress={() => navigation.navigate('Pagamento' as never)}
-                >Continuar pagamento</Text>
+            >
+                <Text style={estilos.textoBotao}>Continuar pagamento</Text>
             </TouchableOpacity>
         </ScrollView>
     );

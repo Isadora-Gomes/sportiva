@@ -77,7 +77,9 @@ const Entrar = ({ navigation }: NavigationParameter) => {
                                     />
                                 </View>
 
-                                <TouchableOpacity style={styles.button} >
+                                <TouchableOpacity style={styles.button} onPress={() => {
+                                    navigation.navigate("Inicio");
+                                }} >
                                     <Text style={styles.buttonText}>Entrar</Text>
                                 </TouchableOpacity>
                                 <View style={styles.textCadastro}>

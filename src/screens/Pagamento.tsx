@@ -13,7 +13,7 @@ const Pagamento = () => {
     return (
         <ScrollView style={estilos.container} contentContainerStyle={{ alignItems: 'center' }}>
             <View style={estilos.topo}>
-                <TouchableOpacity style={estilos.iconVoltar}>
+                <TouchableOpacity style={estilos.iconVoltar} onPress={() => navigation.navigate('InfoEntrega' as never)}>
                     <Icon name="chevron-left" size={20} color="#fff" />
                 </TouchableOpacity>
                 <Image source={require('../../assets/img/logo2.png')} />
@@ -90,9 +90,11 @@ const Pagamento = () => {
                 />
             </View>
 
-            <TouchableOpacity style={estilos.botaoContinuar}>
-                <Text style={estilos.textoBotao}
-                onPress={() => navigation.navigate('FimCompra' as never)}>Finalizar compra</Text>
+            <TouchableOpacity
+                style={estilos.botaoContinuar}
+                onPress={() => navigation.navigate('FimCompra' as never)}
+            >
+                <Text style={estilos.textoBotao}>Finalizar compra</Text>
             </TouchableOpacity>
         </ScrollView>
     );

@@ -38,7 +38,7 @@ class Screens {
     Entrar: ParamItem<"Entrar"> = { component: Entrar, options: { headerShown: false } };
     Cadastro: ParamItem<"Cadastro"> = { component: Cadastro, options: { headerShown: false } };
     Carrinho: ParamItem<"Carrinho"> = { component: Carrinho, options: { headerShown: false } };
-    Inicio: ParamItem<"Inicio"> = { component: Inicio, options: { title: "Início" } };
+    Inicio: ParamItem<"Inicio"> = { component: Inicio, options: {headerShown: false } };
     Pesquisa: ParamItem<"Pesquisa"> = { component: Pesquisa, options: { headerShown: false } };
     Perfil: ParamItem<"Perfil"> = { component: Perfil, options: { headerShown: false } };
     Produto: ParamItem<"Produto"> = { component: Produto, options: { headerShown: false } };
