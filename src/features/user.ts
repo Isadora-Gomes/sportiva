@@ -1,27 +1,27 @@
 import { Failure, Result } from "../util/result";
 
 export class User {
-    readonly id: number;
+    readonly uid: string;
 
-    constructor(id: number) {
-        this.id = id;
+    constructor(uid: string) {
+        this.uid = uid;
     }
 
     static Service =  class UserService {
-        private auth: UserSession | null = null;
+        private auth: User.UserSession | null = null;
         
-        async byId(): Promise<Result<User>> {
+        async byId(uid: string): Promise<Result<User>> {
             if (this.auth == null) {
-                return new Failure<User>("No auth found").result();
+                return Failure.error("No auth found");
             }
-            return new Failure<User>("Unimplemented").result();
+            return Failure.error("Unimplemented");
         }
 
         async search(): Promise<Result<User[]>> {
             if (this.auth == null) {
-                return new Failure<User[]>("No auth found").result();
+                return Failure.error("No auth found");
             }
-            return new Failure<User[]>("Unimplemented").result();
+            return Failure.error("Unimplemented");
         }
     }
 
@@ -34,6 +34,19 @@ export class User {
     static Session = class Session extends User {}
 }
 
-export type UserSession = InstanceType<typeof User.Session>;
 
-export interface UserData {}
+interface UserData {
+    uid: string
+}
+
+export namespace User {
+    export type UserSession = InstanceType<typeof User.Session>;
+    
+    export type UserRepository = InstanceType<typeof User.Repository>;
+
+    export type UserUpdate = InstanceType<typeof User.Update>;
+
+    export type UserService = InstanceType<typeof User.Service>;
+
+    export type DataModel = UserData;
+}
