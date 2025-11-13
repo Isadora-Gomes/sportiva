@@ -3,7 +3,8 @@ import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, Style
 import { Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationParameter } from "../routes/Routes";
-import Icon from 'react-native-vector-icons/Feather';
+// import Icon from 'react-native-vector-icons/Feather';
+import { FontAwesome6 as Icon } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DrawerActions } from '@react-navigation/native';
 
@@ -73,7 +74,7 @@ const Inicio = ({ navigation }: NavigationParameter) => {
             style={estilos.botaoMenu}
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           >
-            <Icon name="menu" size={28} color="#fff" />
+            <Icon name="bars" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
 
