@@ -100,9 +100,7 @@ export default function Carrinho() {
           </View>
           <TouchableOpacity style={estilos.removeBtn}>
             <Icon name="x" style={estilos.icon} />
-            <TouchableOpacity onPress={() => setShowModal(true)}>
-              <Icon name="plus" style={estilos.icon2} />
-            </TouchableOpacity>
+            
           </TouchableOpacity>
         </View>
 
@@ -129,9 +127,7 @@ export default function Carrinho() {
           </View>
           <TouchableOpacity style={estilos.removeBtn}>
             <Icon name="x" style={estilos.icon} />
-            <TouchableOpacity onPress={() => setShowModal(true)}>
-              <Icon name="plus" style={estilos.icon2} />
-            </TouchableOpacity>
+            
           </TouchableOpacity>
         </View>
 
@@ -141,7 +137,7 @@ export default function Carrinho() {
           <View style={estilos.produtoSugestao}>
             <Image source={require('../../assets/img/produto2.png')} style={estilos.sugestaoImg} />
             <Text style={estilos.sugestaoPreco}>R$ 99,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn}>
+            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes4' as never)}>
               <Text style={estilos.comprarTxt}>COMPRAR</Text>
             </TouchableOpacity>
           </View>
@@ -149,7 +145,7 @@ export default function Carrinho() {
           <View style={estilos.produtoSugestao}>
             <Image source={require('../../assets/img/produto1.png')} style={estilos.sugestaoImg} />
             <Text style={estilos.sugestaoPreco}>R$ 399,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn}>
+            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes3' as never)}>
               <Text style={estilos.comprarTxt}>COMPRAR</Text>
             </TouchableOpacity>
           </View>
@@ -157,7 +153,7 @@ export default function Carrinho() {
           <View style={estilos.produtoSugestao}>
             <Image source={require('../../assets/img/produto3.png')} style={estilos.sugestaoImg} />
             <Text style={estilos.sugestaoPreco}>R$ 299,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn}>
+            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes2' as never)}>
               <Text style={estilos.comprarTxt}>COMPRAR</Text>
             </TouchableOpacity>
           </View>
@@ -174,124 +170,7 @@ export default function Carrinho() {
       </ScrollView>
 
 
-      <Modal
-        visible={showModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowModal(false)}
-      >
-        <View style={estilos.modalOverlay}>
-          <View style={estilos.modalContainer}>
-            <Text style={estilos.modalTitle}>Adicionar Produto</Text>
-            <Text style={{ color: '#fff', marginTop: 10 }}>Nome do produto</Text>
-            <TextInput
-              placeholder="Ex. Mochila"
-              placeholderTextColor="#888"
-              style={estilos.input}
-              value={novoItem.nome}
-              onChangeText={(t) => setNovoItem(prev => ({ ...prev, nome: t }))}
-            />
-            <Text style={{ color: '#fff', marginTop: 10 }}>Preço do produto</Text>
-            <TextInput
-              placeholder="Ex. 99,90"
-              placeholderTextColor="#888"
-              style={estilos.input}
-              value={novoItem.preco}
-              onChangeText={(t) => setNovoItem(prev => ({ ...prev, preco: t }))}
-              keyboardType="numeric"
-            />
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Descrição</Text>
-            <TextInput
-              placeholder="Ex. Produto resistente e durável, muito útil para longas caminhadas"
-              placeholderTextColor="#888"
-              style={[estilos.input, { height: 90, textAlignVertical: 'top' }]}
-              value={descricao}
-              onChangeText={setDescricao}
-              multiline
-            />
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Cores do produto</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TextInput
-                placeholder="ex. Azul"
-                placeholderTextColor="#888"
-                style={[estilos.input, { flex: 1, marginTop: 8 }]}
-                value={colorInput}
-                onChangeText={setColorInput}
-              />
-              <TouchableOpacity onPress={addColor} style={{ marginLeft: 8, marginTop: 8, padding: 8, backgroundColor: '#8000ff', borderRadius: 6 }}>
-                <Text style={{ color: '#fff', fontWeight: '700' }}>+</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ marginTop: 8 }}>
-              {colors.map((c, idx) => (
-                <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <TextInput
-                    style={[estilos.input, { flex: 1, marginTop: 0 }]}
-                    value={c}
-                    onChangeText={(t) => updateColor(idx, t)}
-                    placeholder={`Cor ${idx + 1}`}
-                    placeholderTextColor="#888"
-                  />
-                  <TouchableOpacity onPress={() => removeColorAt(idx)} style={{ marginLeft: 8 }}>
-                    <Text style={{ color: '#fff' }}>Remover</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Tamanhos do produto</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TextInput
-                placeholder="Ex. M"
-                placeholderTextColor="#888"
-                style={[estilos.input, { flex: 1, marginTop: 8 }]}
-                value={sizeInput}
-                onChangeText={setSizeInput}
-              />
-              <TouchableOpacity onPress={addSize} style={{ marginLeft: 8, marginTop: 8, padding: 8, backgroundColor: '#8000ff', borderRadius: 6 }}>
-                <Text style={{ color: '#fff', fontWeight: '700' }}>+</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ marginTop: 8 }}>
-              {sizes.map((s, idx) => (
-                <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <TextInput
-                    style={[estilos.input, { flex: 1, marginTop: 0 }]}
-                    value={s}
-                    onChangeText={(t) => updateSize(idx, t)}
-                    placeholder={`Tamanho ${idx + 1}`}
-                    placeholderTextColor="#888"
-                  />
-                  <TouchableOpacity onPress={() => removeSizeAt(idx)} style={{ marginLeft: 8 }}>
-                    <Text style={{ color: '#fff' }}>Remover</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Imagem do produto</Text>
-            <TouchableOpacity onPress={pickImage} style={estilos.uploadBox}>
-              {imageUri ? (
-                <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />
-              ) : (
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={estilos.uploadText}>Enviar uma imagem ou selecione da galeria</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
-              <Pressable onPress={() => setShowModal(false)} style={estilos.modalBtn}>
-                <Text style={estilos.modalBtnTxt}>Cancelar</Text>
-              </Pressable>
-              <Pressable onPress={() => { /* aqui você pode adicionar lógica para salvar */ setShowModal(false); }} style={[estilos.modalBtn, { backgroundColor: '#8000ff', marginLeft: 8 }]}>
-                <Text style={[estilos.modalBtnTxt, { color: '#fff' }]}>Adicionar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      
     </SafeAreaView>
   );
 }

@@ -6,9 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 const Pagamento = () => {
     const navigation = useNavigation();
 
-    const [boletoChecked, setBoletoChecked] = useState(false);
-    const [cartaoChecked, setCartaoChecked] = useState(false);
-    const [pixChecked, setPixChecked] = useState(false);
+    const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
 
     return (
         <ScrollView style={estilos.container} contentContainerStyle={{ alignItems: 'center' }}>
@@ -35,13 +33,13 @@ const Pagamento = () => {
 
             <View style={estilos.linhaPagamento}>
                 <TouchableOpacity
-                    onPress={() => setBoletoChecked(!boletoChecked)}
+                    onPress={() => setSelectedPayment(selectedPayment === 'boleto' ? null : 'boleto')}
                     style={{
                         width: 24,
                         height: 24,
                         borderWidth: 2,
                         borderColor: '#414141ff',
-                        backgroundColor: boletoChecked ? '#8000ff' : '#0f0f10',
+                        backgroundColor: selectedPayment === 'boleto' ? '#8000ff' : '#0f0f10',
                         marginRight: 10
                     }}
                 />
@@ -54,13 +52,13 @@ const Pagamento = () => {
 
             <View style={estilos.linhaPagamento}>
                 <TouchableOpacity
-                    onPress={() => setCartaoChecked(!cartaoChecked)}
+                    onPress={() => setSelectedPayment(selectedPayment === 'cartao' ? null : 'cartao')}
                     style={{
                         width: 24,
                         height: 24,
                         borderWidth: 2,
                         borderColor: '#414141ff',
-                        backgroundColor: cartaoChecked ? '#8000ff' : '#0f0f10',
+                        backgroundColor: selectedPayment === 'cartao' ? '#8000ff' : '#0f0f10',
                         marginRight: 10
                     }}
                 />
@@ -73,13 +71,13 @@ const Pagamento = () => {
 
             <View style={estilos.linhaPagamento}>
                 <TouchableOpacity
-                    onPress={() => setPixChecked(!pixChecked)}
+                    onPress={() => setSelectedPayment(selectedPayment === 'pix' ? null : 'pix')}
                     style={{
                         width: 24,
                         height: 24,
                         borderWidth: 2,
                         borderColor: '#414141ff',
-                        backgroundColor: pixChecked ? '#8000ff' : '#0f0f10',
+                        backgroundColor: selectedPayment === 'pix' ? '#8000ff' : '#0f0f10',
                         marginRight: 10
                     }}
                 />
