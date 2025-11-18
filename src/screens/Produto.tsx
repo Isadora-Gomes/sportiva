@@ -8,8 +8,55 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 export default function App() {
   const insets = useSafeAreaInsets();
   const [filtersVisible, setFiltersVisible] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const navigation = useNavigation();
+
+  const products = [
+    {
+      id: 'p1',
+      name: 'Tênis Vulcan',
+      image: require('../../assets/img/produto1.png'),
+      price: 'R$ 500,00',
+      category: 'Tênis',
+      description: `Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
+              com conforto — ideal para quem busca presença e segurança no
+              dia a dia.`,
+      screen: 'Detalhes3'
+    },
+    {
+      id: 'p2',
+      name: 'Garrafa térmica',
+      image: require('../../assets/img/produto2.png'),
+      price: 'R$ 99,90',
+      category: 'Acessórios',
+      description: `Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
+              perfeita para treinos, trabalho ou viagens.`,
+      screen: 'Detalhes4'
+    },
+    {
+      id: 'p3',
+      name: 'Mochila pop',
+      image: require('../../assets/img/produto3.png'),
+      price: 'R$ 399,90',
+      category: 'Mochila',
+      description: `Praticidade e atitude: amplo espaço interno, compartimentos organizados
+              e materiais duráveis — ótima para estudos, trabalho e passeios.`,
+      screen: 'Detalhes2'
+    },
+    {
+      id: 'p4',
+      name: 'Camisa flow',
+      image: require('../../assets/img/produto4.png'),
+      price: 'R$ 99,90',
+      category: 'Camiseta',
+      description: `Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
+              uso casual.`,
+      screen: 'Detalhes'
+    }
+  ];
+
+  const filteredProducts = selectedCategory ? products.filter(p => p.category === selectedCategory) : products;
 
   return (
     <SafeAreaView
@@ -61,10 +108,15 @@ export default function App() {
 
               <Text style={estilos.modalSection}>Categorias</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Tênis</Text></TouchableOpacity>
-                <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Camiseta</Text></TouchableOpacity>
-                <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Mochila</Text></TouchableOpacity>
-                <TouchableOpacity style={estilos.chip}><Text style={estilos.chipText}>Acessórios</Text></TouchableOpacity>
+                {['Tênis','Camiseta','Mochila','Acessórios'].map(cat => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[estilos.chip, selectedCategory === cat ? { backgroundColor: '#8000ff' } : null]}
+                    onPress={() => setSelectedCategory(prev => prev === cat ? null : cat)}
+                  >
+                    <Text style={[estilos.chipText, selectedCategory === cat ? { color: '#fff' } : null]}>{cat}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
 
               <Text style={estilos.modalSection}>Preço</Text>
@@ -75,6 +127,9 @@ export default function App() {
               </View>
 
               <View style={estilos.modalActions}>
+                <TouchableOpacity style={[estilos.modalBtn, estilos.modalClear]} onPress={() => { setSelectedCategory(null); setFiltersVisible(false); }}>
+                  <Text style={[estilos.modalBtnText, estilos.modalClearText]}>Retirar filtros</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={estilos.modalBtn} onPress={() => setFiltersVisible(false)}>
                   <Text style={estilos.modalBtnText}>Fechar</Text>
                 </TouchableOpacity>
@@ -86,94 +141,23 @@ export default function App() {
           </View>
         </Modal>
 
-        <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes3' as never)}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto1.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 500,00</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Tênis Vulcan</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
+        {filteredProducts.map(prod => (
+          <TouchableOpacity key={prod.id} style={estilos.itemProduto} onPress={() => navigation.navigate(prod.screen as never)}>
+            <View style={estilos.colPreco}>
+              <Image source={prod.image} style={estilos.produto} />
+              <Text style={estilos.preco}>{prod.price}</Text>
             </View>
-            <Text style={estilos.descricao}>
-              Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
-              com conforto — ideal para quem busca presença e segurança no
-              dia a dia.
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes4' as never)}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto2.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 99,90</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Garrafa térmica</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>4.8 <Icon name="star" size={12} color="#ffd455" /></Text>
+            <View style={estilos.conteudo}>
+              <View style={estilos.topoItem}>
+                <Text style={estilos.nome}>{prod.name}</Text>
+                <View style={estilos.notaBox}>
+                  <Text style={estilos.notaTexto}>{prod.id === 'p3' ? '5.0' : prod.id === 'p2' ? '4.8' : prod.id === 'p1' ? '4.5' : '4.3'} <Icon name="star" size={12} color="#ffd455" /></Text>
+                </View>
               </View>
+              <Text style={estilos.descricao}>{prod.description}</Text>
             </View>
-            <Text style={estilos.descricao}>
-              Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
-              perfeita para treinos, trabalho ou viagens.
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes2' as never)}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto3.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 399,90</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Mochila pop</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>5.0 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
-            </View>
-            <Text style={estilos.descricao}>
-              Praticidade e atitude: amplo espaço interno, compartimentos organizados
-              e materiais duráveis — ótima para estudos, trabalho e passeios.
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={estilos.itemProduto} onPress={() => navigation.navigate('Detalhes' as never)}>
-          <View style={estilos.colPreco}>
-            <Image
-              source={require('../../assets/img/produto4.png')}
-              style={estilos.produto}
-            />
-            <Text style={estilos.preco}>R$ 99,90</Text>
-          </View>
-          <View style={estilos.conteudo}>
-            <View style={estilos.topoItem}>
-              <Text style={estilos.nome}>Camisa flow</Text>
-              <View style={estilos.notaBox}>
-                <Text style={estilos.notaTexto}>4.3 <Icon name="star" size={12} color="#ffd455" /></Text>
-              </View>
-            </View>
-            <Text style={estilos.descricao}>
-              Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
-              uso casual.
-            </Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        ))}
 
         {/* Removed duplicated non-clickable product blocks (Mochila pop & Camisa flow) */}
 
@@ -347,6 +331,8 @@ const estilos = StyleSheet.create({
   modalBtnText: { color: '#fff', fontWeight: '700' },
   modalApply: { backgroundColor: '#8000ff' },
   modalApplyText: { color: '#fff', fontWeight: '900' },
+  modalClear: { backgroundColor: '#444', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8, marginLeft: 8 },
+  modalClearText: { color: '#fff', fontWeight: '700' },
   chip: { backgroundColor: '#1f1f1f', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, marginBottom: 8 },
   chipText: { color: '#fff', fontWeight: '700' },
 });

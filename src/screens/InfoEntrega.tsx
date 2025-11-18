@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, ScrollView } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from "react-native";
 import Icon from "../components/icon";
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,8 +13,19 @@ const InfoEntrega = () => {
     const [tel, setTel] = useState("");
     const [obs, setObs] = useState("");
 
+    const scrollRef = useRef<ScrollView | null>(null);
+    const [inputsY, setInputsY] = useState<number>(0);
+
+    const scrollToInputs = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ y: inputsY, animated: true });
+        }
+    }
+
     return (
-        <ScrollView style={estilos.container} contentContainerStyle={{ alignItems: 'center' }}>
+        <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#0f0f10' }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 60}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView ref={scrollRef} style={estilos.container} contentContainerStyle={{ alignItems: 'center', flexGrow: 1, paddingBottom: 20 }} keyboardShouldPersistTaps={'handled'}>
             <View style={estilos.topo}>
                 <TouchableOpacity style={estilos.iconVoltar} onPress={() => navigation.navigate('Carrinho' as never)}>
                     <Icon name="chevron-left" size={20} color="#fff" />
@@ -47,42 +58,49 @@ const InfoEntrega = () => {
 
             <Text style={estilos.subtotal}>SUBTOTAL : R$ 199,90</Text>
 
-            <Text style={estilos.entregaTitulo}>Informações de entrega</Text>
-            <TextInput
-                style={estilos.inputEntrega}
-                placeholder="Nome completo"
-                placeholderTextColor="#888"
-                value={nome}
-                onChangeText={setNome}
-            />
-            <TextInput
-                style={estilos.inputEntrega}
-                placeholder="Email"
-                placeholderTextColor="#888"
-                value={email}
-                onChangeText={setEmail}
-            />
-            <TextInput
-                style={estilos.inputEntrega}
-                placeholder="Endereço"
-                placeholderTextColor="#888"
-                value={endereco}
-                onChangeText={setEndereco}
-            />
-            <TextInput
-                style={estilos.inputEntrega}
-                placeholder="Tel"
-                placeholderTextColor="#888"
-                value={tel}
-                onChangeText={setTel}
-            />
-            <TextInput
-                style={estilos.inputEntrega}
-                placeholder="Observações"
-                placeholderTextColor="#888"
-                value={obs}
-                onChangeText={setObs}
-            />
+            <View style={{ width: '100%' }} onLayout={(e) => setInputsY(e.nativeEvent.layout.y)}>
+                <Text style={estilos.entregaTitulo}>Informações de entrega</Text>
+                <TextInput
+                    style={estilos.inputEntrega}
+                    placeholder="Nome completo"
+                    placeholderTextColor="#888"
+                    value={nome}
+                    onChangeText={setNome}
+                    onFocus={scrollToInputs}
+                />
+                <TextInput
+                    style={estilos.inputEntrega}
+                    placeholder="Email"
+                    placeholderTextColor="#888"
+                    value={email}
+                    onChangeText={setEmail}
+                    onFocus={scrollToInputs}
+                />
+                <TextInput
+                    style={estilos.inputEntrega}
+                    placeholder="Endereço"
+                    placeholderTextColor="#888"
+                    value={endereco}
+                    onChangeText={setEndereco}
+                    onFocus={scrollToInputs}
+                />
+                <TextInput
+                    style={estilos.inputEntrega}
+                    placeholder="Tel"
+                    placeholderTextColor="#888"
+                    value={tel}
+                    onChangeText={setTel}
+                    onFocus={scrollToInputs}
+                />
+                <TextInput
+                    style={estilos.inputEntrega}
+                    placeholder="Observações"
+                    placeholderTextColor="#888"
+                    value={obs}
+                    onChangeText={setObs}
+                    onFocus={scrollToInputs}
+                />
+            </View>
 
             <TouchableOpacity
                 style={estilos.botaoContinuar}
@@ -90,7 +108,9 @@ const InfoEntrega = () => {
             >
                 <Text style={estilos.textoBotao}>Continuar pagamento</Text>
             </TouchableOpacity>
-        </ScrollView>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };
 

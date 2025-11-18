@@ -141,7 +141,7 @@ export default function Carrinho() {
           <View style={estilos.produtoSugestao}>
             <Image source={require('../../assets/img/produto2.png')} style={estilos.sugestaoImg} />
             <Text style={estilos.sugestaoPreco}>R$ 99,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn}>
+            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes4' as never)}>
               <Text style={estilos.comprarTxt}>COMPRAR</Text>
             </TouchableOpacity>
           </View>
@@ -149,7 +149,7 @@ export default function Carrinho() {
           <View style={estilos.produtoSugestao}>
             <Image source={require('../../assets/img/produto1.png')} style={estilos.sugestaoImg} />
             <Text style={estilos.sugestaoPreco}>R$ 399,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn}>
+            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes3' as never)}>
               <Text style={estilos.comprarTxt}>COMPRAR</Text>
             </TouchableOpacity>
           </View>
@@ -157,7 +157,7 @@ export default function Carrinho() {
           <View style={estilos.produtoSugestao}>
             <Image source={require('../../assets/img/produto3.png')} style={estilos.sugestaoImg} />
             <Text style={estilos.sugestaoPreco}>R$ 299,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn}>
+            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes2' as never)}>
               <Text style={estilos.comprarTxt}>COMPRAR</Text>
             </TouchableOpacity>
           </View>
