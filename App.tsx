@@ -97,7 +97,7 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="rgb(19, 19, 24)" />
       <NavigationContainer>
         <Drawer.Navigator
-          initialRouteName="Inicio"
+          initialRouteName="Entrar"
           drawerContent={(props) => <CustomDrawerContent {...props} />}
           screenOptions={{
             headerShown: false,

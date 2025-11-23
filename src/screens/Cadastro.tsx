@@ -26,7 +26,7 @@ const Cadastro = ({ navigation, route }: NavigationParameter<"Cadastro">) => {
                     <View style={{}}>
                         <View style={{
                             backgroundColor: '#8400ff',
-                            height: height * 0.35,
+                            height: height * 0.25,
                             width: width,
                             alignItems: 'center',
                             justifyContent: 'center',
