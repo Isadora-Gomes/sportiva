@@ -65,7 +65,7 @@ export default function Carrinho() {
           <TouchableOpacity
             style={{
               position: 'absolute',
-              top: insets.top + 5,
+              top: 5,
               right: 10,
               zIndex: 10,
               padding: 8,
