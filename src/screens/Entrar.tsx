@@ -1,118 +1,145 @@
 import React, { useState, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Dimensions, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Dimensions, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, Modal, Alert } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from "../components/icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationParameter } from "../routes/Routes";
+import Form from "../util/form";
+import { User } from "../features/user";
+import { Failure } from "../util/result";
 
-const Entrar = ({ navigation }: NavigationParameter) => {
+interface EntrarForm {
+    email: string;
+    senha: string;
+}
+
+const form: Form<EntrarForm> = new Form({});
+
+const Entrar = ({ navigation }: NavigationParameter<"Entrar">) => {
+    form.use();
+
     const redirecionarCadastro = () => {
         navigation.navigate("Cadastro")
     }
 
+    const entrar = async () => {
+        // return navigation.navigate("Inicio");
+        if (form.fields.email && form.fields.senha) {
+            const result = await User.login(form.fields.email!, form.fields.senha!);
+
+            if (result instanceof Failure) {
+                Alert.alert("Erro", String(result.failure));
+            } else {
+                navigation.navigate("Inicio");
+            }
+        } else {
+            Alert.alert("Erro", "Por favor, preencha todos os campos.")
+        }
+    }
+
     const { width, height } = Dimensions.get('window');
 
-      const scrollRef = useRef<ScrollView | null>(null);
-      const [inputsY, setInputsY] = useState<number>(0);
+    const scrollRef = useRef<ScrollView | null>(null);
+    const [inputsY, setInputsY] = useState<number>(0);
 
-      const scrollToInputs = () => {
+    const scrollToInputs = () => {
         if (scrollRef.current) {
-          scrollRef.current.scrollTo({ y: inputsY, animated: true });
+            scrollRef.current.scrollTo({ y: inputsY, animated: true });
         }
-      };
+    };
 
-      return (
-            <SafeAreaView
-                edges={[ "bottom" ]}
-                style={{
-                    height,
-                    backgroundColor: "#000",
-                    width
-                }}
-            >
-                <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#000' }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={60}>
-                  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    return (
+        <SafeAreaView
+            edges={["bottom"]}
+            style={{
+                height,
+                backgroundColor: "#000",
+                width
+            }}
+        >
+            <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#000' }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={60}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={'handled'}>
-                      <ImageBackground style={styles.background}>
-                        <View style={styles.container}>
-                          <View style={{}}>
-                            <View style={{
-                                backgroundColor: '#8400ff',
-                                height: height * 0.35,
-                                width: width,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <Image
-                                    style={styles.logo}
-                                    source={require('../../assets/img/logo.png')}
-                                />
-                            </View>
-                            <View style={{
-                                position: 'relative',
-                            }}>
-                                <View style={{
-                                    height: 1,
-                                    width: width,
-                                    backgroundColor: '#8400FF',
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    zIndex: 3,
-                                }}></View>
-                                <Svg height={height * 0.35} width={width} style={{ position: 'absolute' }}>
-                                    <Path d="M1 1C21 29 104.5 50 168.884 43.6348C246.326 35.9785 282.493 73.3906 285.5 77.5C288.507 81.6094 320.341 107.974 342 172.5C363.315 236 414 258 440 258V1H1Z" fill="#8400FF" stroke="#8400FF" />
-                                </Svg>
-                                <View style={{
-                                    height: height * 0.25,
-                                    justifyContent: 'center',
-                                    paddingLeft: 40,
-                                    boxSizing: 'border-box',
-                                }}>
-                                    <Text style={styles.titulo}>Entrar</Text>
-                                </View>
-                                <View style={{ alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setInputsY(e.nativeEvent.layout.y)}>
-                                    <Text style={styles.label}>E-mail</Text>
-                                    <View style={styles.inputContainer}>
-                                        <Icon name="envelope" size={20} color="#fff" style={{ marginRight: 10 }} />
-                                        <TextInput
-                                            style={styles.input}
-                                            onFocus={scrollToInputs}
+                        <ImageBackground style={styles.background}>
+                            <View style={styles.container}>
+                                <View style={{}}>
+                                    <View style={{
+                                        backgroundColor: '#8400ff',
+                                        height: height * 0.35,
+                                        width: width,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}>
+                                        <Image
+                                            style={styles.logo}
+                                            source={require('../../assets/img/logo.png')}
                                         />
                                     </View>
-                                    <Text style={styles.label}>Senha</Text>
-                                    <View style={styles.inputContainer}>
-                                        <Icon name="lock" size={20} color="#fff" style={{ marginRight: 10 }} />
-                                        <TextInput
-                                            style={styles.input}
-                                            secureTextEntry
-                                            onFocus={scrollToInputs}
-                                        />
-                                    </View>
+                                    <View style={{
+                                        position: 'relative',
+                                    }}>
+                                        <View style={{
+                                            height: 1,
+                                            width: width,
+                                            backgroundColor: '#8400FF',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            zIndex: 3,
+                                        }}></View>
+                                        <Svg height={height * 0.35} width={width} style={{ position: 'absolute' }}>
+                                            <Path d="M1 1C21 29 104.5 50 168.884 43.6348C246.326 35.9785 282.493 73.3906 285.5 77.5C288.507 81.6094 320.341 107.974 342 172.5C363.315 236 414 258 440 258V1H1Z" fill="#8400FF" stroke="#8400FF" />
+                                        </Svg>
+                                        <View style={{
+                                            height: height * 0.25,
+                                            justifyContent: 'center',
+                                            paddingLeft: 40,
+                                            boxSizing: 'border-box',
+                                        }}>
+                                            <Text style={styles.titulo}>Entrar</Text>
+                                        </View>
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }} onLayout={(e) => setInputsY(e.nativeEvent.layout.y)}>
+                                            <Text style={styles.label}>E-mail</Text>
+                                            <View style={styles.inputContainer}>
+                                                <Icon name="envelope" size={20} color="#fff" style={{ marginRight: 10 }} />
+                                                <TextInput
+                                                    style={styles.input}
+                                                    onFocus={scrollToInputs}
+                                                    onChangeText={(text) => form.set("email", text)}
+                                                />
+                                            </View>
+                                            <Text style={styles.label}>Senha</Text>
+                                            <View style={styles.inputContainer}>
+                                                <Icon name="lock" size={20} color="#fff" style={{ marginRight: 10 }} />
+                                                <TextInput
+                                                    style={styles.input}
+                                                    secureTextEntry
+                                                    onFocus={scrollToInputs}
+                                                    onChangeText={(text) => form.set("senha", text)}
+                                                />
+                                            </View>
 
-                                    <TouchableOpacity style={styles.button} onPress={() => {
-                                        navigation.navigate("Inicio");
-                                    }} >
-                                        <Text style={styles.buttonText}>Entrar</Text>
-                                    </TouchableOpacity>
-                                    <View style={styles.textCadastro}>
-                                        <TouchableOpacity onPress={redirecionarCadastro}>
-                                            <Text style={styles.linkCadastro}>
-                                                Não possui uma conta? <Text style={styles.linkDestacado}>Cadastre-se</Text>
-                                            </Text>
-                                        </TouchableOpacity>
+                                            <TouchableOpacity style={styles.button} onPress={entrar} >
+                                                <Text style={styles.buttonText}>Entrar</Text>
+                                            </TouchableOpacity>
+                                            <View style={styles.textCadastro}>
+                                                <TouchableOpacity onPress={redirecionarCadastro}>
+                                                    <Text style={styles.linkCadastro}>
+                                                        Não possui uma conta? <Text style={styles.linkDestacado}>Cadastre-se</Text>
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
                                     </View>
                                 </View>
                             </View>
-                          </View>
-                        </View>
-                      </ImageBackground>
+                        </ImageBackground>
                     </ScrollView>
-                  </TouchableWithoutFeedback>
-                </KeyboardAvoidingView>
-            </SafeAreaView>
-        );
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({

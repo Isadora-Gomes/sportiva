@@ -1,13 +1,41 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Dimensions, Alert } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import Icon from "../components/icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationParameter } from "../routes/Routes";
+import Form from "../util/form";
+import { User } from "../features/user";
+import { Failure } from "../util/result";
+
+interface CadastroForm {
+    nome: string;
+    email: string;
+    senha: string;
+}
+
+const form = new Form<CadastroForm>();
 
 const Cadastro = ({ navigation, route }: NavigationParameter<"Cadastro">) => {
+    form.use();
+    
     const redirecionarCadastro = () => {
         navigation.navigate("Entrar")
+    }
+
+    const cadastrar = () => {
+        console.log(form.fields);
+        if (form.fields.nome && form.fields.email && form.fields.senha) {
+            const result = User.register(form.fields.nome, form.fields.email, form.fields.senha);
+
+            if (result instanceof Failure) {
+                Alert.alert("Erro", String(result.failure));
+            } else {
+                navigation.navigate("Inicio");
+            }
+        } else {
+            Alert.alert("Erro", "Por favor, preencha todos os campos.")
+        }
     }
 
     const { width, height } = Dimensions.get('window');
@@ -65,6 +93,7 @@ const Cadastro = ({ navigation, route }: NavigationParameter<"Cadastro">) => {
                                     <Icon name="user" size={20} color="#fff" style={{ marginRight: 10 }} />
                                     <TextInput
                                         style={styles.input}
+                                        onChangeText={(text) => form.set("nome", text)}
                                     />
                                 </View>
                                 <Text style={styles.label}>E-mail</Text>
@@ -72,6 +101,7 @@ const Cadastro = ({ navigation, route }: NavigationParameter<"Cadastro">) => {
                                     <Icon name="envelope" size={20} color="#fff" style={{ marginRight: 10 }} />
                                     <TextInput
                                         style={styles.input}
+                                        onChangeText={(text) => form.set("email", text)}
                                     />
                                 </View>
                                 <Text style={styles.label}>Senha</Text>
@@ -80,10 +110,11 @@ const Cadastro = ({ navigation, route }: NavigationParameter<"Cadastro">) => {
                                     <TextInput
                                         style={styles.input}
                                         secureTextEntry
+                                        onChangeText={(text) => form.set("senha", text)}
                                     />
                                 </View>
 
-                                <TouchableOpacity style={styles.button} >
+                                <TouchableOpacity style={styles.button} onPress={cadastrar}>
                                     <Text style={styles.buttonText}>Cadastrar-se</Text>
                                 </TouchableOpacity>
                                 <View style={styles.textEntrar}>

@@ -1,48 +1,56 @@
-import React from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { DrawerActions } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { DrawerActions, useFocusEffect } from "@react-navigation/native";
 import { NavigationParameter } from "../routes/Routes";
 import { FontAwesome6 as Icon } from "@expo/vector-icons";
+import { User } from "../features/user";
+import { Purchase } from "../features/product";
+import { Success, Failure } from "../util/result";
 
 const HistoricoCompras = ({ navigation }: NavigationParameter) => {
-    const compras = [
-        {
-            id: 1,
-            nome: "Tênis Vulcan",
-            detalhes: "Tamanho 42\nQtd: 1",
-            data: "29/07/2024",
-            preco: "R$ 149,90",
-            imagem: require('../../assets/img/pinktenis.png')
-        },
-        {
-            id: 2,
-            nome: "Camiseta Flow",
-            detalhes: "Tamanho G\nAjustado\nQtd: 1",
-            data: "03/08/2024",
-            preco: "R$ 89,90",
-            imagem: require('../../assets/img/graytshirt.png')
-        },
-        {
-            id: 3,
-            nome: "Garrafa térmica",
-            detalhes: "500ml\nQtd: 1",
-            data: "12/09/2024",
-            preco: "R$ 59,90",
-            imagem: require('../../assets/img/blackbottle.png')
-        },
-        {
-            id: 4,
-            nome: "Mochila pop",
-            detalhes: "Dimensões: 53 cm Alt x 27 cm Larg x 15 cm Prof\nQtd: 2",
-            data: "21/09/2024",
-            preco: "R$ 199,90",
-            imagem: require('../../assets/img/pinkbag.png')
+    const insets = useSafeAreaInsets();
+    const [user, setUser] = useState<User.UserSession | null>(null);
+    const [compras, setCompras] = useState<Purchase[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const loadData = async () => {
+        try {
+            setLoading(true);
+            const userSession = User.auth;
+            setUser(userSession);
+
+            if (userSession) {
+                const result = await userSession.obterHistoricoCompras();
+                if (result instanceof Success) {
+                    setCompras(result.result);
+                } else {
+                    console.error('Erro ao carregar histórico:', result.failure);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        } finally {
+            setLoading(false);
         }
-    ];
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            loadData();
+        }, [])
+    );
+
+    const formatarData = (data: Date) => {
+        return data.toLocaleDateString('pt-BR');
+    };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f10" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f10", paddingTop: insets.top }}>
             <ScrollView style={estilos.tela} contentContainerStyle={{ paddingBottom: 40 }}>
 
                 {/* TOPO */}
@@ -61,39 +69,96 @@ const HistoricoCompras = ({ navigation }: NavigationParameter) => {
                 </View>
 
                 {/* TÍTULO */}
-                <Text style={estilos.titulo}>Compras anteriores</Text>
+                <Text style={estilos.titulo}>Histórico de Compras</Text>
 
-                {/* CARD DE FUNDO */}
-                <View style={estilos.cardHistorico}>
-
-                    <Text style={estilos.tituloCard}>Compras</Text>
-
-                    <View style={estilos.timeline}>
-
-                        {compras.map((item, index) => (
-                            <View key={item.id} style={estilos.itemLinha}>
-
-                                <View style={estilos.boxCompra}>
-
-                                    <Image source={item.imagem} style={estilos.imgProduto} />
-
-                                    <View style={estilos.colunaInfos}>
-                                        <Text style={estilos.nomeProduto}>{item.nome}</Text>
-                                        <Text style={estilos.detalhesProduto}>{item.detalhes}</Text>
+                {loading ? (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+                        <ActivityIndicator size="large" color="#8400FF" />
+                        <Text style={{ color: '#fff', marginTop: 10 }}>Carregando histórico...</Text>
+                    </View>
+                ) : !user ? (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+                        <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center', marginBottom: 20 }}>
+                            Você precisa estar logado para ver seu histórico de compras.
+                        </Text>
+                        <TouchableOpacity 
+                            style={estilos.botaoLogin}
+                            onPress={() => navigation.navigate('Entrar')}
+                        >
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>FAZER LOGIN</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : compras.length === 0 ? (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+                        <Icon name="shopping-cart" size={64} color="#666" />
+                        <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+                            Você ainda não fez nenhuma compra.
+                        </Text>
+                        <TouchableOpacity 
+                            style={estilos.botaoLogin}
+                            onPress={() => navigation.navigate('Produto')}
+                        >
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>COMEÇAR A COMPRAR</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <View style={estilos.conteudoLista}>
+                        {compras.map((compra, index) => (
+                            <View key={compra.id} style={estilos.compraContainer}>
+                                {/* Cabeçalho da compra */}
+                                <View style={estilos.compraHeader}>
+                                    <Text style={estilos.compraId}>Compra #{compra.id}</Text>
+                                    <Text style={estilos.compraData}>{formatarData(compra.data)}</Text>
+                                </View>
+                                
+                                {/* Itens da compra */}
+                                {compra.items.map((item, itemIndex) => (
+                                    <View key={itemIndex} style={estilos.itemLinha}>
+                                        <View style={estilos.boxCompra}>
+                                            <Image 
+                                                source={item.produto ? { uri: item.produto.imagem.getUrl() } : require('../../assets/img/produto1.png')} 
+                                                style={estilos.imgProduto} 
+                                            />
+                                            <View style={estilos.colunaInfos}>
+                                                <Text style={estilos.nomeProduto}>
+                                                    {item.produto ? item.produto.nome : "Produto não disponível"}
+                                                </Text>
+                                                <Text style={estilos.detalhesProduto}>
+                                                    {item.produto && item.produto.descricao}
+                                                </Text>
+                                                {item.opcao && Array.isArray(item.opcao) && item.opcao.length > 0 && (
+                                                    <Text style={estilos.detalhesProduto}>
+                                                        Opções: {item.opcao.join(', ')}
+                                                    </Text>
+                                                )}
+                                                <Text style={estilos.detalhesProduto}>
+                                                    Quantidade: {item.quantidade}
+                                                </Text>
+                                            </View>
+                                            <View style={estilos.colunaPreco}>
+                                                <Text style={estilos.preco}>
+                                                    R$ {item.produto ? (item.produto.preco * item.quantidade).toFixed(2).replace('.', ',') : '0,00'}
+                                                </Text>
+                                            </View>
+                                        </View>
                                     </View>
+                                ))}
 
-                                    <View style={estilos.colunaPreco}>
-                                        <Text style={estilos.data}>{item.data}</Text>
-                                        <Text style={estilos.preco}>{item.preco}</Text>
-                                    </View>
-
+                                {/* Rodapé da compra com total e cupom */}
+                                <View style={estilos.compraFooter}>
+                                    {compra.cupom && compra.cupom.codigo && (
+                                        <Text style={estilos.cupomInfo}>
+                                            Cupom aplicado: {compra.cupom.codigo} - {compra.cupom.descricao}
+                                        </Text>
+                                    )}
+                                    <Text style={estilos.totalCompra}>
+                                        Total: R$ {compra.preco.toFixed(2).replace('.', ',')}
+                                    </Text>
                                 </View>
                             </View>
                         ))}
-
                     </View>
-
-                </View>
+                )}
 
                 {/* RODAPÉ */}
                 <View style={estilos.rodape}>
@@ -238,6 +303,68 @@ const estilos = StyleSheet.create({
         marginTop: 40,
         lineHeight: 16,
         width: 300,
+    },
+
+    botaoLogin: {
+        backgroundColor: '#8000ff',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    conteudoLista: {
+        paddingHorizontal: 16,
+        marginTop: 20,
+    },
+
+    compraContainer: {
+        backgroundColor: '#1f1f1f',
+        borderRadius: 10,
+        marginBottom: 20,
+        padding: 16,
+    },
+
+    compraHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+        paddingBottom: 8,
+    },
+
+    compraId: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
+    compraData: {
+        color: '#ccc',
+        fontSize: 12,
+    },
+
+    compraFooter: {
+        borderTopWidth: 1,
+        borderTopColor: '#333',
+        paddingTop: 12,
+        marginTop: 8,
+    },
+
+    cupomInfo: {
+        color: '#4CAF50',
+        fontSize: 12,
+        marginBottom: 4,
+    },
+
+    totalCompra: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'right',
     },
 });
 

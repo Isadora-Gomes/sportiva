@@ -2,6 +2,7 @@ import supabase from "../../supabase";
 import { Failure, Result, Success } from "../util/result";
 import { Image } from "./image";
 import { NullableSetter, setToNull } from "./model";
+import { Cart, Product, ProductOption, Purchase, Coupon } from "./product";
 
 export class User {
     readonly uid: string;
@@ -20,7 +21,7 @@ export class User {
         this.admin = admin;
     }
 
-    private static auth: User.UserSession | null = null;
+    static auth: User.UserSession | null = null;
     
     static async byId(uid: string): Promise<Result<User>> {
         if (this.auth == null) {
@@ -73,6 +74,16 @@ export class User {
         const users = resultDB.data.map(User.userMap);
 
         return new Success(users);
+    }
+
+    static async logout(): Promise<Result<void>> {
+        const result = await supabase.auth.signOut();
+        if (result.error) {
+            console.log(result.error);
+            return Failure.error("Não foi possível finalizar a sessão");
+        }
+        this.auth = null;
+        return new Success<void>(undefined);
     }
 
     static async login(email: string, password: string): Promise<Result<User.UserSession>> {
@@ -236,7 +247,188 @@ export class User {
         }
     }
 
-    static Session = class Session extends User {}
+    static Session = class Session extends User {
+        private _carrinho: Cart | null = null;
+
+        constructor(uid: string, nome: string, email: string, imagem: Image | null, criado_em: Date, admin: boolean) {
+            super(uid, nome, email, imagem, criado_em, admin);
+        }
+
+        async getCarrinho(): Promise<Result<Cart>> {
+            if (this._carrinho) {
+                return new Success(this._carrinho);
+            }
+
+            const resultDBCarrinho = await supabase.from("itens_carrinhos").select("*").eq("usuario", this.uid);
+            if (resultDBCarrinho.error) {
+                console.log(resultDBCarrinho.error);
+                return Failure.error("Não foi possível buscar os dados do carrinho do usuário");
+            }
+
+            const items: Map<Product, { quantidade: number, opcao: ProductOption | null }> = new Map();
+            for (const itemData of resultDBCarrinho.data) {
+                const productResult = await Product.byId(itemData.produto);
+                if (productResult instanceof Failure) {
+                    return Failure.error("Não foi possível buscar os dados do produto do carrinho");
+                }
+                const product = productResult.result;
+
+                if (!product) {
+                    return Failure.error("Produto do carrinho não encontrado");
+                }
+
+                const opcao = itemData.opcao ? JSON.parse(itemData.opcao) : null;
+                items.set(product, { quantidade: itemData.quantidade, opcao });
+            }
+
+            this._carrinho = new Cart(this, items);
+            return new Success(this._carrinho);
+        }
+
+        clearCarrinhoCache() {
+            this._carrinho = null;
+        }
+
+        async adicionarAoCarrinho(produto: Product, quantidade: number = 1, opcao: ProductOption | null = null): Promise<Result<void>> {
+            try {
+                // Verificar se o item já existe no carrinho
+                const resultDBExistente = await supabase
+                    .from("itens_carrinhos")
+                    .select("*")
+                    .eq("usuario", this.uid)
+                    .eq("produto", produto.id)
+                    .single();
+
+                if (resultDBExistente.data) {
+                    // Item já existe, atualizar a quantidade
+                    const novaQuantidade = resultDBExistente.data.quantidade + quantidade;
+                    const resultUpdate = await supabase
+                        .from("itens_carrinhos")
+                        .update({ 
+                            quantidade: novaQuantidade,
+                            opcao: opcao ? JSON.stringify(opcao) : null 
+                        })
+                        .eq("usuario", this.uid)
+                        .eq("produto", produto.id);
+
+                    if (resultUpdate.error) {
+                        console.log(resultUpdate.error);
+                        return Failure.error("Não foi possível atualizar a quantidade no carrinho");
+                    }
+                } else {
+                    // Item não existe, inserir novo item
+                    const resultInsert = await supabase
+                        .from("itens_carrinhos")
+                        .insert({
+                            usuario: this.uid,
+                            produto: produto.id,
+                            quantidade: quantidade,
+                            opcao: opcao ? JSON.stringify(opcao) : null
+                        });
+
+                    if (resultInsert.error) {
+                        console.log(resultInsert.error);
+                        return Failure.error("Não foi possível adicionar o item ao carrinho");
+                    }
+                }
+
+                // Limpar cache do carrinho para forçar recarregamento
+                this.clearCarrinhoCache();
+                
+                return new Success<void>(undefined);
+            } catch (error) {
+                console.error("Erro ao adicionar ao carrinho:", error);
+                return Failure.error("Erro interno ao adicionar ao carrinho");
+            }
+        }
+
+        async alterarQuantidadeCarrinho(produto: Product, novaQuantidade: number): Promise<Result<void>> {
+            try {
+                if (novaQuantidade <= 0) {
+                    return await this.removerDoCarrinho(produto);
+                }
+
+                const resultUpdate = await supabase
+                    .from("itens_carrinhos")
+                    .update({ quantidade: novaQuantidade })
+                    .eq("usuario", this.uid)
+                    .eq("produto", produto.id);
+
+                if (resultUpdate.error) {
+                    console.log(resultUpdate.error);
+                    return Failure.error("Não foi possível alterar a quantidade do item");
+                }
+
+                // Limpar cache do carrinho para forçar recarregamento
+                this.clearCarrinhoCache();
+                
+                return new Success<void>(undefined);
+            } catch (error) {
+                console.error("Erro ao alterar quantidade:", error);
+                return Failure.error("Erro interno ao alterar quantidade");
+            }
+        }
+
+        async removerDoCarrinho(produto: Product): Promise<Result<void>> {
+            try {
+                const resultDelete = await supabase
+                    .from("itens_carrinhos")
+                    .delete()
+                    .eq("usuario", this.uid)
+                    .eq("produto", produto.id);
+
+                if (resultDelete.error) {
+                    console.log(resultDelete.error);
+                    return Failure.error("Não foi possível remover o item do carrinho");
+                }
+
+                // Limpar cache do carrinho para forçar recarregamento
+                this.clearCarrinhoCache();
+                
+                return new Success<void>(undefined);
+            } catch (error) {
+                console.error("Erro ao remover do carrinho:", error);
+                return Failure.error("Erro interno ao remover do carrinho");
+            }
+        }
+
+        async finalizarCompra(cupom: Coupon | null = null): Promise<Result<Purchase>> {
+            try {
+                // Buscar carrinho atual
+                const carrinhoResult = await this.getCarrinho();
+                if (carrinhoResult instanceof Failure) {
+                    return Failure.error("Não foi possível acessar o carrinho");
+                }
+
+                const carrinho = carrinhoResult.result;
+                if (!carrinho || carrinho.items.size === 0) {
+                    return Failure.error("Carrinho está vazio");
+                }
+
+                // Criar compra
+                const compraResult = await Purchase.create(this, carrinho, cupom);
+                if (compraResult instanceof Success) {
+                    // Limpar cache do carrinho
+                    this.clearCarrinhoCache();
+                    return compraResult;
+                }
+
+                return compraResult;
+            } catch (error) {
+                console.error("Erro ao finalizar compra:", error);
+                return Failure.error("Erro interno ao finalizar compra");
+            }
+        }
+
+        async obterHistoricoCompras(): Promise<Result<Purchase[]>> {
+            try {
+                return await Purchase.listByUser(this.uid);
+            } catch (error) {
+                console.error("Erro ao obter histórico de compras:", error);
+                return Failure.error("Erro interno ao obter histórico");
+            }
+        }
+    }
 }
 
 

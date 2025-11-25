@@ -6,6 +6,7 @@ import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigatio
 import { FontAwesome6 as Icon } from "@expo/vector-icons";
 
 import { screens } from "./src/routes/Routes";
+import { User } from "./src/features/user";
 
 const Drawer = createDrawerNavigator();
 
@@ -79,7 +80,7 @@ export default function App() {
               style={{ width: 40, height: 40, borderRadius: 60 }}
             />
             <View style={{ display: 'flex', marginLeft: 10, gap: 3 }}>
-              <Text style={{ color: "#fff", fontWeight: "bold" }}>User</Text>
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>{User.auth?.nome ?? "Usuário"}</Text>
               <Text style={{ color: "#fff", fontSize: 12 }}>Meu perfil <Icon name="chevron-right" size={10} color="#fff" /></Text>
             </View>
           </TouchableOpacity>

@@ -1,24 +1,158 @@
-import React, { useState } from "react";
-import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Modal, TextInput, Pressable, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Modal, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NavigationParameter } from "../routes/Routes";
+import { Product, ProductOptions } from "../features/product";
+import { Failure, Success } from "../util/result";
 
-export default function App() {
+export default function App({ navigation }: NavigationParameter) {
   const insets = useSafeAreaInsets();
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  // Estados para produtos
+  const [produtos, setProdutos] = useState<Product[]>([]);
+  const [loadingProdutos, setLoadingProdutos] = useState(true);
 
   // modal: adicionar produto
   const [showModal, setShowModal] = useState(false);
   const [novoItem, setNovoItem] = useState({ nome: '', preco: '' });
   const [descricao, setDescricao] = useState('');
+  const [categoria, setCategoria] = useState('');
+  const [estoque, setEstoque] = useState('');
   const [colorInput, setColorInput] = useState('');
   const [colors, setColors] = useState<string[]>([]);
   const [sizeInput, setSizeInput] = useState('');
   const [sizes, setSizes] = useState<string[]>([]);
   const [imageUri, setImageUri] = useState<string | null>(null);
+
+  // Função para carregar produtos
+  const carregarProdutos = async () => {
+    setLoadingProdutos(true);
+    try {
+      const resultado = await Product.list(selectedCategory || undefined);
+      if (resultado instanceof Success) {
+        setProdutos(resultado.result);
+      } else if (resultado instanceof Failure) {
+        console.error("Erro ao carregar produtos:", resultado.failure);
+        Alert.alert("Erro", "Não foi possível carregar os produtos");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar produtos:", error);
+      Alert.alert("Erro", "Erro interno ao carregar produtos");
+    } finally {
+      setLoadingProdutos(false);
+    }
+  };
+
+  // Carregar produtos quando o componente monta ou quando a categoria muda
+  useEffect(() => {
+    carregarProdutos();
+  }, [selectedCategory]);
+
+  const cadastrar = async () => {
+    // Validar campos obrigatórios
+    if (!novoItem.nome.trim()) {
+      Alert.alert("Erro", "Por favor, informe o nome do produto");
+      return;
+    }
+    if (!novoItem.preco.trim()) {
+      Alert.alert("Erro", "Por favor, informe o preço do produto");
+      return;
+    }
+    if (!descricao.trim()) {
+      Alert.alert("Erro", "Por favor, informe a descrição do produto");
+      return;
+    }
+    if (!categoria.trim()) {
+      Alert.alert("Erro", "Por favor, informe a categoria do produto");
+      return;
+    }
+    if (!estoque.trim()) {
+      Alert.alert("Erro", "Por favor, informe o estoque do produto");
+      return;
+    }
+    if (!imageUri) {
+      Alert.alert("Erro", "Por favor, selecione uma imagem do produto");
+      return;
+    }
+
+    try {
+      // Converter preço para número
+      const precoNumerico = parseFloat(novoItem.preco.replace(',', '.'));
+      if (isNaN(precoNumerico)) {
+        Alert.alert("Erro", "Preço deve ser um valor numérico válido");
+        return;
+      }
+
+      // Converter estoque para número
+      const estoqueNumerico = parseInt(estoque);
+      if (isNaN(estoqueNumerico)) {
+        Alert.alert("Erro", "Estoque deve ser um valor numérico válido");
+        return;
+      }
+
+      // Criar opções do produto
+      const opcoes: ProductOptions = {};
+      if (colors.length > 0) {
+        opcoes.cores = colors.filter(c => c.trim() !== '');
+      }
+      if (sizes.length > 0) {
+        opcoes.tamanhos = sizes.filter(s => s.trim() !== '');
+      }
+
+      // Criar produto com imagem
+      const resultado = await Product.create(
+        novoItem.nome.trim(),
+        descricao.trim(),
+        precoNumerico,
+        estoqueNumerico,
+        categoria.trim(),
+        opcoes,
+        imageUri
+      );
+
+      if (resultado instanceof Success) {
+        Alert.alert("Sucesso", "Produto cadastrado com sucesso!");
+        // Limpar formulário
+        setNovoItem({ nome: '', preco: '' });
+        setDescricao('');
+        setCategoria('');
+        setEstoque('');
+        setColors([]);
+        setSizes([]);
+        setImageUri(null);
+        setShowModal(false);
+        // Recarregar a lista de produtos
+        carregarProdutos();
+      } else if (resultado instanceof Failure) {
+        Alert.alert("Erro", String(resultado.failure));
+      }
+    } catch (error) {
+      console.error("Erro ao cadastrar produto:", error);
+      Alert.alert("Erro", "Erro interno ao cadastrar produto");
+    }
+  }
+
+  const limparFormulario = () => {
+    setNovoItem({ nome: '', preco: '' });
+    setDescricao('');
+    setCategoria('');
+    setEstoque('');
+    setColors([]);
+    setSizes([]);
+    setColorInput('');
+    setSizeInput('');
+    setImageUri(null);
+  };
+
+  const fecharModal = () => {
+    limparFormulario();
+    setShowModal(false);
+  };
 
   const addColor = () => {
     const v = colorInput.trim();
@@ -47,62 +181,29 @@ export default function App() {
   const pickImage = async () => {
     try {
       const ImagePicker = require('expo-image-picker');
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
-      if (!result.cancelled) {
-        setImageUri(result.uri);
+      
+      // Solicitar permissão para acessar a galeria
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert('Permissão necessária', 'É necessário permitir o acesso à galeria para selecionar uma imagem.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImageUri(result.assets[0].uri);
       }
     } catch (err) {
-      Alert.alert('Dependência ausente', 'Instale expo-image-picker: expo install expo-image-picker');
+      console.error('Erro ao selecionar imagem:', err);
+      Alert.alert('Dependência ausente', 'Para usar esta funcionalidade, instale: expo install expo-image-picker');
     }
   };
-
-  const navigation = useNavigation();
-
-  const products = [
-    {
-      id: 'p1',
-      name: 'Tênis Vulcan',
-      image: require('../../assets/img/produto1.png'),
-      price: 'R$ 500,00',
-      category: 'Tênis',
-      description: `Estilo e desempenho em cada passo. O Tênis Vulcan combina design moderno
-              com conforto — ideal para quem busca presença e segurança no
-              dia a dia.`,
-      screen: 'Detalhes3'
-    },
-    {
-      id: 'p2',
-      name: 'Garrafa térmica',
-      image: require('../../assets/img/produto2.png'),
-      price: 'R$ 99,90',
-      category: 'Acessórios',
-      description: `Mantém a bebida na temperatura ideal por horas. Prática, leve e resistente,
-              perfeita para treinos, trabalho ou viagens.`,
-      screen: 'Detalhes4'
-    },
-    {
-      id: 'p3',
-      name: 'Mochila pop',
-      image: require('../../assets/img/produto3.png'),
-      price: 'R$ 399,90',
-      category: 'Mochila',
-      description: `Praticidade e atitude: amplo espaço interno, compartimentos organizados
-              e materiais duráveis — ótima para estudos, trabalho e passeios.`,
-      screen: 'Detalhes2'
-    },
-    {
-      id: 'p4',
-      name: 'Camisa flow',
-      image: require('../../assets/img/produto4.png'),
-      price: 'R$ 99,90',
-      category: 'Camiseta',
-      description: `Conforto e versatilidade: tecido leve e caimento moderno para treinos ou
-              uso casual.`,
-      screen: 'Detalhes'
-    }
-  ];
-
-  const filteredProducts = selectedCategory ? products.filter(p => p.category === selectedCategory) : products;
 
   return (
     <SafeAreaView
@@ -192,23 +293,40 @@ export default function App() {
           </View>
         </Modal>
 
-        {filteredProducts.map(prod => (
-          <TouchableOpacity key={prod.id} style={estilos.itemProduto} onPress={() => navigation.navigate(prod.screen as never)}>
-            <View style={estilos.colPreco}>
-              <Image source={prod.image} style={estilos.produto} />
-              <Text style={estilos.preco}>{prod.price}</Text>
-            </View>
-            <View style={estilos.conteudo}>
-              <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>{prod.name}</Text>
-                <View style={estilos.notaBox}>
-                  <Text style={estilos.notaTexto}>{prod.id === 'p3' ? '5.0' : prod.id === 'p2' ? '4.8' : prod.id === 'p1' ? '4.5' : '4.3'} <Icon name="star" size={12} color="#ffd455" /></Text>
-                </View>
+        {loadingProdutos ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+            <ActivityIndicator size="large" color="#1de99d" />
+            <Text style={{ color: '#fff', marginTop: 10 }}>Carregando produtos...</Text>
+          </View>
+        ) : produtos.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+            <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>
+              Nenhum produto encontrado{selectedCategory ? ` na categoria "${selectedCategory}"` : ''}.
+            </Text>
+          </View>
+        ) : (
+          produtos.map(produto => (
+            <TouchableOpacity 
+              key={produto.id} 
+              style={estilos.itemProduto} 
+              onPress={() => navigation.navigate('Detalhes', produto)}
+            >
+              <View style={estilos.colPreco}>
+                <Image source={{ uri: produto.imagem.getUrl() }} style={estilos.produto} />
+                <Text style={estilos.preco}>R$ {produto.preco.toFixed(2).replace('.', ',')}</Text>
               </View>
-              <Text style={estilos.descricao}>{prod.description}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+              <View style={estilos.conteudo}>
+                <View style={estilos.topoItem}>
+                  <Text style={estilos.nome}>{produto.nome}</Text>
+                  <View style={estilos.notaBox}>
+                    <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
+                  </View>
+                </View>
+                <Text style={estilos.descricao}>{produto.descricao}</Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
 
         {/* Removed duplicated non-clickable product blocks (Mochila pop & Camisa flow) */}
 
@@ -228,117 +346,142 @@ export default function App() {
         visible={showModal}
         animationType="slide"
         transparent
-        onRequestClose={() => setShowModal(false)}
+        onRequestClose={fecharModal}
       >
         <View style={estilos.modalOverlay}>
           <View style={estilos.modalCard}>
-            <Text style={estilos.modalTitle}>Adicionar Produto</Text>
-            <Text style={{ color: '#fff', marginTop: 10 }}>Nome do produto</Text>
-            <TextInput
-              placeholder="Ex. Mochila"
-              placeholderTextColor="#888"
-              style={estilos.input}
-              value={novoItem.nome}
-              onChangeText={(t) => setNovoItem(prev => ({ ...prev, nome: t }))}
-            />
-            <Text style={{ color: '#fff', marginTop: 10 }}>Preço do produto</Text>
-            <TextInput
-              placeholder="Ex. 99,90"
-              placeholderTextColor="#888"
-              style={estilos.input}
-              value={novoItem.preco}
-              onChangeText={(t) => setNovoItem(prev => ({ ...prev, preco: t }))}
-              keyboardType="numeric"
-            />
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Descrição</Text>
-            <TextInput
-              placeholder="Ex. Produto resistente e durável, muito útil para longas caminhadas"
-              placeholderTextColor="#888"
-              style={[estilos.input, { height: 90, textAlignVertical: 'top' }]}
-              value={descricao}
-              onChangeText={setDescricao}
-              multiline
-            />
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Cores do produto</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <ScrollView 
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            >
+              <Text style={estilos.modalTitle}>Adicionar Produto</Text>
+              <Text style={{ color: '#fff', marginTop: 10 }}>Nome do produto <Text style={{ color: '#ff6b6b' }}>*</Text></Text>
               <TextInput
-                placeholder="ex. Azul"
+                placeholder="Ex. Mochila"
                 placeholderTextColor="#888"
-                style={[estilos.input, { flex: 1, marginTop: 8 }]}
-                value={colorInput}
-                onChangeText={setColorInput}
+                style={estilos.input}
+                value={novoItem.nome}
+                onChangeText={(t) => setNovoItem(prev => ({ ...prev, nome: t }))}
               />
-              <TouchableOpacity onPress={addColor} style={{ marginLeft: 8, marginTop: 8, padding: 8, backgroundColor: '#8000ff', borderRadius: 6 }}>
-                <Text style={{ color: '#fff', fontWeight: '700' }}>+</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ marginTop: 8 }}>
-              {colors.map((c, idx) => (
-                <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <TextInput
-                    style={[estilos.input, { flex: 1, marginTop: 0 }]}
-                    value={c}
-                    onChangeText={(t) => updateColor(idx, t)}
-                    placeholder={`Cor ${idx + 1}`}
-                    placeholderTextColor="#888"
-                  />
-                  <TouchableOpacity onPress={() => removeColorAt(idx)} style={{ marginLeft: 8 }}>
-                    <Text style={{ color: '#fff' }}>Remover</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-
-            <Text style={{ color: '#fff', marginTop: 10 }}>Tamanhos do produto</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ color: '#fff', marginTop: 10 }}>Preço do produto <Text style={{ color: '#ff6b6b' }}>*</Text></Text>
               <TextInput
-                placeholder="Ex. M"
+                placeholder="Ex. 99,90"
                 placeholderTextColor="#888"
-                style={[estilos.input, { flex: 1, marginTop: 8 }]}
-                value={sizeInput}
-                onChangeText={setSizeInput}
+                style={estilos.input}
+                value={novoItem.preco}
+                onChangeText={(t) => setNovoItem(prev => ({ ...prev, preco: t }))}
+                keyboardType="numeric"
               />
-              <TouchableOpacity onPress={addSize} style={{ marginLeft: 8, marginTop: 8, padding: 8, backgroundColor: '#8000ff', borderRadius: 6 }}>
-                <Text style={{ color: '#fff', fontWeight: '700' }}>+</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ marginTop: 8 }}>
-              {sizes.map((s, idx) => (
-                <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <TextInput
-                    style={[estilos.input, { flex: 1, marginTop: 0 }]}
-                    value={s}
-                    onChangeText={(t) => updateSize(idx, t)}
-                    placeholder={`Tamanho ${idx + 1}`}
-                    placeholderTextColor="#888"
-                  />
-                  <TouchableOpacity onPress={() => removeSizeAt(idx)} style={{ marginLeft: 8 }}>
-                    <Text style={{ color: '#fff' }}>Remover</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
 
-            <Text style={{ color: '#fff', marginTop: 10 }}>Imagem do produto</Text>
-            <TouchableOpacity onPress={pickImage} style={estilos.uploadBox}>
-              {imageUri ? (
-                <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />
-              ) : (
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={estilos.uploadText}>Enviar uma imagem ou selecione da galeria</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
-              <Pressable onPress={() => setShowModal(false)} style={estilos.modalBtn}>
-                <Text style={estilos.modalBtnText}>Cancelar</Text>
-              </Pressable>
-              <Pressable onPress={() => { /* aqui você pode adicionar lógica para salvar */ setShowModal(false); }} style={[estilos.modalBtn, { backgroundColor: '#8000ff', marginLeft: 8 }]}>
-                <Text style={[estilos.modalBtnText, { color: '#fff' }]}>Adicionar</Text>
-              </Pressable>
-            </View>
+              <Text style={{ color: '#fff', marginTop: 10 }}>Categoria <Text style={{ color: '#ff6b6b' }}>*</Text></Text>
+              <TextInput
+                placeholder="Ex. Tênis, Camiseta, Mochila, Acessórios"
+                placeholderTextColor="#888"
+                style={estilos.input}
+                value={categoria}
+                onChangeText={setCategoria}
+              />
+
+              <Text style={{ color: '#fff', marginTop: 10 }}>Estoque <Text style={{ color: '#ff6b6b' }}>*</Text></Text>
+              <TextInput
+                placeholder="Ex. 10"
+                placeholderTextColor="#888"
+                style={estilos.input}
+                value={estoque}
+                onChangeText={setEstoque}
+                keyboardType="numeric"
+              />
+
+              <Text style={{ color: '#fff', marginTop: 10 }}>Descrição <Text style={{ color: '#ff6b6b' }}>*</Text></Text>
+              <TextInput
+                placeholder="Ex. Produto resistente e durável, muito útil para longas caminhadas"
+                placeholderTextColor="#888"
+                style={[estilos.input, { height: 90, textAlignVertical: 'top' }]}
+                value={descricao}
+                onChangeText={setDescricao}
+                multiline
+              />
+
+              <Text style={{ color: '#fff', marginTop: 10 }}>Cores do produto</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  placeholder="ex. Azul"
+                  placeholderTextColor="#888"
+                  style={[estilos.input, { flex: 1, marginTop: 8 }]}
+                  value={colorInput}
+                  onChangeText={setColorInput}
+                />
+                <TouchableOpacity onPress={addColor} style={{ marginLeft: 8, marginTop: 8, padding: 8, backgroundColor: '#8000ff', borderRadius: 6 }}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>+</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginTop: 8 }}>
+                {colors.map((c, idx) => (
+                  <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    <TextInput
+                      style={[estilos.input, { flex: 1, marginTop: 0 }]}
+                      value={c}
+                      onChangeText={(t) => updateColor(idx, t)}
+                      placeholder={`Cor ${idx + 1}`}
+                      placeholderTextColor="#888"
+                    />
+                    <TouchableOpacity onPress={() => removeColorAt(idx)} style={{ marginLeft: 8 }}>
+                      <Text style={{ color: '#fff' }}>Remover</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+
+              <Text style={{ color: '#fff', marginTop: 10 }}>Tamanhos do produto</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  placeholder="Ex. M"
+                  placeholderTextColor="#888"
+                  style={[estilos.input, { flex: 1, marginTop: 8 }]}
+                  value={sizeInput}
+                  onChangeText={setSizeInput}
+                />
+                <TouchableOpacity onPress={addSize} style={{ marginLeft: 8, marginTop: 8, padding: 8, backgroundColor: '#8000ff', borderRadius: 6 }}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>+</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginTop: 8 }}>
+                {sizes.map((s, idx) => (
+                  <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    <TextInput
+                      style={[estilos.input, { flex: 1, marginTop: 0 }]}
+                      value={s}
+                      onChangeText={(t) => updateSize(idx, t)}
+                      placeholder={`Tamanho ${idx + 1}`}
+                      placeholderTextColor="#888"
+                    />
+                    <TouchableOpacity onPress={() => removeSizeAt(idx)} style={{ marginLeft: 8 }}>
+                      <Text style={{ color: '#fff' }}>Remover</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+
+              <Text style={{ color: '#fff', marginTop: 10 }}>Imagem do produto <Text style={{ color: '#ff6b6b' }}>*</Text></Text>
+              <TouchableOpacity onPress={pickImage} style={estilos.uploadBox}>
+                {imageUri ? (
+                  <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />
+                ) : (
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={estilos.uploadText}>Selecione uma imagem (obrigatório)</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
+                <Pressable onPress={fecharModal} style={estilos.modalBtn}>
+                  <Text style={estilos.modalBtnText}>Cancelar</Text>
+                </Pressable>
+                <Pressable onPress={cadastrar} style={[estilos.modalBtn, { backgroundColor: '#8000ff', marginLeft: 8 }]}>
+                  <Text style={[estilos.modalBtnText, { color: '#fff' }]}>Adicionar</Text>
+                </Pressable>
+              </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -489,6 +632,7 @@ const estilos = StyleSheet.create({
   modalCard: {
     width: '100%',
     maxWidth: 560,
+    maxHeight: '90%', // Limita altura máxima para evitar overflow
     backgroundColor: '#121214',
     borderRadius: 12,
     padding: 18,

@@ -1,60 +1,135 @@
-import React, { useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Modal, TextInput, Pressable, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Modal, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { useNavigation, DrawerActions, useFocusEffect } from '@react-navigation/native';
+import { User } from "../features/user";
+import { Product, Cart } from "../features/product";
+import { Success, Failure } from "../util/result";
+import { NavigationParameter } from "../routes/Routes";
 
-export default function Carrinho() {
-  const navigation = useNavigation();
+export default function Carrinho({ navigation }: NavigationParameter<"Carrinho">) {
   const insets = useSafeAreaInsets();
-  const [mochilaQty, setMochilaQty] = useState(1);
-  const [garrafaQty, setGarrafaQty] = useState(1);
+  
+  const [user, setUser] = useState<User.UserSession | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<Cart | null>(null);
+  const [produtos, setProdutos] = useState<Product[]>([]);
+  const [updatingQuantity, setUpdatingQuantity] = useState<number | null>(null);
 
-  const subtotal = 399.90 * mochilaQty + 99.90 * garrafaQty;
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const userSession = User.auth;
+      setUser(userSession);
+      
+      // Buscar produtos para "Mais opções"
+      const produtosResult = await Product.list();
+      if (produtosResult instanceof Success) {
+        setProdutos(produtosResult.result.slice(0, 4)); // Primeiros 4 produtos
+      }
+      
+      if (userSession) {
+        const cartResult = await userSession.getCarrinho();
+        if (cartResult instanceof Success) {
+          setCart(cartResult.result);
+        } else {
+          console.error('Erro ao carregar carrinho:', cartResult.failure);
+          Alert.alert("Erro", "Não foi possível carregar o carrinho");
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const [showModal, setShowModal] = useState(false);
-  const [novoItem, setNovoItem] = useState({ nome: '', preco: '' });
-  const [descricao, setDescricao] = useState('');
-  const [colorInput, setColorInput] = useState('');
-  const [colors, setColors] = useState<string[]>([]);
-  const [sizeInput, setSizeInput] = useState('');
-  const [sizes, setSizes] = useState<string[]>([]);
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+    }, [])
+  );
+
+  const alterarQuantidade = async (produto: Product, novaQuantidade: number) => {
+    if (!user || novaQuantidade < 0) return;
+    
+    setUpdatingQuantity(produto.id);
+    try {
+      const result = await user.alterarQuantidadeCarrinho(produto, novaQuantidade);
+      if (result instanceof Success) {
+        // Recarregar carrinho
+        await loadData();
+      } else {
+        Alert.alert("Erro", "Não foi possível alterar a quantidade");
+      }
+    } catch (error) {
+      console.error("Erro ao alterar quantidade:", error);
+      Alert.alert("Erro", "Erro interno");
+    } finally {
+      setUpdatingQuantity(null);
+    }
+  };
+
+  const removerItem = async (produto: Product) => {
+    if (!user) return;
+    
+    setUpdatingQuantity(produto.id);
+    try {
+      const result = await user.removerDoCarrinho(produto);
+      if (result instanceof Success) {
+        await loadData();
+      } else {
+        Alert.alert("Erro", "Não foi possível remover o item");
+      }
+    } catch (error) {
+      console.error("Erro ao remover item:", error);
+      Alert.alert("Erro", "Erro interno");
+    } finally {
+      setUpdatingQuantity(null);
+    }
+  };
+
+  // Calcular subtotal
+  const calcularSubtotal = () => {
+    if (!cart) return 0;
+    let total = 0;
+    cart.items.forEach((item, produto) => {
+      total += produto.preco * item.quantidade;
+    });
+    return total;
+  };
 
   const addColor = () => {
-    const v = colorInput.trim();
-    if (v) {
-      setColors(prev => [...prev, v]);
-      setColorInput('');
-    } else {
-      setColors(prev => [...prev, '']);
-    }
+    // Função removida - não utilizada
   };
-  const removeColorAt = (idx: number) => setColors(prev => prev.filter((_, i) => i !== idx));
-  const updateColor = (idx: number, v: string) => setColors(prev => prev.map((c, i) => i === idx ? v : c));
+  
+  const removeColorAt = (idx: number) => {
+    // Função removida - não utilizada
+  };
+  
+  const updateColor = (idx: number, v: string) => {
+    // Função removida - não utilizada
+  };
 
   const addSize = () => {
-    const v = sizeInput.trim();
-    if (v) {
-      setSizes(prev => [...prev, v]);
-      setSizeInput('');
-    } else {
-      setSizes(prev => [...prev, '']);
-    }
+    // Função removida - não utilizada
   };
-  const removeSizeAt = (idx: number) => setSizes(prev => prev.filter((_, i) => i !== idx));
-  const updateSize = (idx: number, v: string) => setSizes(prev => prev.map((s, i) => i === idx ? v : s));
+  
+  const removeSizeAt = (idx: number) => {
+    // Função removida - não utilizada
+  };
+  
+  const updateSize = (idx: number, v: string) => {
+    // Função removida - não utilizada
+  };
 
   const pickImage = async () => {
-    try {
-      const ImagePicker = require('expo-image-picker');
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
-      if (!result.cancelled) {
-        setImageUri(result.uri);
-      }
-    } catch (err) {
-      Alert.alert('Dependência ausente', 'Instale expo-image-picker: expo install expo-image-picker');
-    }
+    // Função removida - não utilizada
   };
 
   return (
@@ -78,99 +153,140 @@ export default function Carrinho() {
             <Icon name="bars" size={26} color="#fff" />
           </TouchableOpacity>
         </View>
-        <View style={estilos.itemCarrinho}>
-          <View style={estilos.imgCarrinho}>
-            <Image source={require('../../assets/img/produto3.png')} style={estilos.imgProduto} />
-          </View>
-          <View style={estilos.infoProduto}>
-            <Text style={estilos.nomeProduto}>MOCHILA POP</Text>
-            <Text style={estilos.detProduto}>Dimensões: 38 cm (A) x 28 cm (L) x 13 cm (P)</Text>
-            <Text style={estilos.detProduto}>100% poliéster</Text>
-            <Text style={estilos.precoProduto}>R$ 399,90</Text>
 
-            <View style={estilos.controleQtd}>
-              <TouchableOpacity onPress={() => setMochilaQty(prev => Math.max(prev - 1, 1))}>
-                <Text style={estilos.btnQtd}>-</Text>
-              </TouchableOpacity>
-              <Text style={estilos.qtd}>{mochilaQty}</Text>
-              <TouchableOpacity onPress={() => setMochilaQty(prev => prev + 1)}>
-                <Text style={estilos.btnQtd}>+</Text>
+        {!User.auth ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+            <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center', marginBottom: 20 }}>
+              Você precisa estar logado para ver seu carrinho.
+            </Text>
+            <TouchableOpacity 
+              style={estilos.finalizarBtn}
+              onPress={() => navigation.navigate('Entrar' as never)}
+            >
+              <Text style={estilos.finalizarTxt}>FAZER LOGIN</Text>
+            </TouchableOpacity>
+          </View>
+        ) : loading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+            <ActivityIndicator size="large" color="#8400FF" />
+            <Text style={{ color: '#fff', marginTop: 10 }}>Carregando carrinho...</Text>
+          </View>
+        ) : !cart || cart.items.size === 0 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+            <Icon name="shopping-cart" size={64} color="#666" />
+            <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+              Seu carrinho está vazio.
+            </Text>
+            <TouchableOpacity 
+              style={estilos.finalizarBtn}
+              onPress={() => navigation.navigate('Produto' as never)}
+            >
+              <Text style={estilos.finalizarTxt}>CONTINUAR COMPRANDO</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            {Array.from(cart.items.entries()).map(([produto, item]) => (
+              <View key={produto.id} style={estilos.itemCarrinho}>
+                <View style={estilos.imgCarrinho}>
+                  <Image source={{ uri: produto.imagem.getUrl() }} style={estilos.imgProduto} />
+                </View>
+                <View style={estilos.infoProduto}>
+                  <Text style={estilos.nomeProduto}>{produto.nome.toUpperCase()}</Text>
+                  <Text style={estilos.detProduto}>{produto.descricao}</Text>
+                  {item.opcao && Array.isArray(item.opcao) && item.opcao.length > 0 && (
+                    <Text style={estilos.detProduto}>Opções: {item.opcao.join(', ')}</Text>
+                  )}
+                  <Text style={estilos.precoProduto}>R$ {produto.preco.toFixed(2).replace('.', ',')}</Text>
+
+                  <View style={estilos.controleQtd}>
+                    <TouchableOpacity 
+                      onPress={() => alterarQuantidade(produto, item.quantidade - 1)}
+                      disabled={updatingQuantity === produto.id || item.quantidade <= 1}
+                    >
+                      <Text style={[estilos.btnQtd, updatingQuantity === produto.id && { opacity: 0.5 }]}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={estilos.qtd}>{item.quantidade}</Text>
+                    <TouchableOpacity 
+                      onPress={() => alterarQuantidade(produto, item.quantidade + 1)}
+                      disabled={updatingQuantity === produto.id}
+                    >
+                      <Text style={[estilos.btnQtd, updatingQuantity === produto.id && { opacity: 0.5 }]}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <TouchableOpacity 
+                  style={estilos.removeBtn}
+                  onPress={() => removerItem(produto)}
+                  disabled={updatingQuantity === produto.id}
+                >
+                  <Icon name="x" style={[estilos.icon, updatingQuantity === produto.id && { opacity: 0.5 }]} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </>
+        )}
+
+        {/* Mais opções - só mostrar se há itens no carrinho */}
+        {cart && cart.items.size > 0 && (
+          <>
+            <Text style={estilos.secaoTitulo}>Mais opções para você:</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={estilos.listaProdutos}>
+              {produtos.map((produto) => (
+                <View key={produto.id} style={estilos.produtoSugestao}>
+                  <Image source={{ uri: produto.imagem.getUrl() }} style={estilos.sugestaoImg} />
+                  <Text style={estilos.sugestaoPreco}>R$ {produto.preco.toFixed(2).replace('.', ',')}</Text>
+                  <TouchableOpacity 
+                    style={estilos.comprarBtn} 
+                    onPress={() => navigation.navigate('Detalhes', produto)}
+                  >
+                    <Text style={estilos.comprarTxt}>COMPRAR</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              
+              {/* Fallback caso não carregue produtos do banco */}
+              {produtos.length === 0 && (
+                <>
+                  <View style={estilos.produtoSugestao}>
+                    <Image source={require('../../assets/img/produto2.png')} style={estilos.sugestaoImg} />
+                    <Text style={estilos.sugestaoPreco}>R$ 99,90</Text>
+                    <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Produto' as never)}>
+                      <Text style={estilos.comprarTxt}>COMPRAR</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={estilos.produtoSugestao}>
+                    <Image source={require('../../assets/img/produto1.png')} style={estilos.sugestaoImg} />
+                    <Text style={estilos.sugestaoPreco}>R$ 399,90</Text>
+                    <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Produto' as never)}>
+                      <Text style={estilos.comprarTxt}>COMPRAR</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={estilos.produtoSugestao}>
+                    <Image source={require('../../assets/img/produto3.png')} style={estilos.sugestaoImg} />
+                    <Text style={estilos.sugestaoPreco}>R$ 299,90</Text>
+                    <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Produto' as never)}>
+                      <Text style={estilos.comprarTxt}>COMPRAR</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
+            </ScrollView>
+
+            <View style={estilos.subtotal}>
+              <Text style={estilos.subtotalTxt}>Subtotal R$ {calcularSubtotal().toFixed(2).replace('.', ',')}</Text>
+              <TouchableOpacity style={estilos.finalizarBtn}>
+                <Text style={estilos.finalizarTxt}
+                  onPress={() => navigation.navigate('InfoEntrega' as never)}>
+                  FINALIZAR COMPRA
+                </Text>
               </TouchableOpacity>
             </View>
-          </View>
-          <TouchableOpacity style={estilos.removeBtn}>
-            <Icon name="x" style={estilos.icon} />
-            
-          </TouchableOpacity>
-        </View>
-
-        {/* Garrafa Térmica */}
-        <View style={estilos.itemCarrinho}>
-          <View style={estilos.imgCarrinho}>
-            <Image source={require('../../assets/img/produto2.png')} style={estilos.imgProduto} />
-          </View>
-          <View style={estilos.infoProduto}>
-            <Text style={estilos.nomeProduto}>GARRAFA TÉRMICA</Text>
-            <Text style={estilos.detProduto}>500ml</Text>
-            <Text style={estilos.detProduto}>Cor: roxa</Text>
-            <Text style={estilos.precoProduto}>R$ 99,90</Text>
-
-            <View style={estilos.controleQtd}>
-              <TouchableOpacity onPress={() => setGarrafaQty(prev => Math.max(prev - 1, 1))}>
-                <Text style={estilos.btnQtd}>-</Text>
-              </TouchableOpacity>
-              <Text style={estilos.qtd}>{garrafaQty}</Text>
-              <TouchableOpacity onPress={() => setGarrafaQty(prev => prev + 1)}>
-                <Text style={estilos.btnQtd}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <TouchableOpacity style={estilos.removeBtn}>
-            <Icon name="x" style={estilos.icon} />
-            
-          </TouchableOpacity>
-        </View>
-
-        {/* Mais opções */}
-        <Text style={estilos.secaoTitulo}>Mais opções para você:</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={estilos.listaProdutos}>
-          <View style={estilos.produtoSugestao}>
-            <Image source={require('../../assets/img/produto2.png')} style={estilos.sugestaoImg} />
-            <Text style={estilos.sugestaoPreco}>R$ 99,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes4' as never)}>
-              <Text style={estilos.comprarTxt}>COMPRAR</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={estilos.produtoSugestao}>
-            <Image source={require('../../assets/img/produto1.png')} style={estilos.sugestaoImg} />
-            <Text style={estilos.sugestaoPreco}>R$ 399,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes3' as never)}>
-              <Text style={estilos.comprarTxt}>COMPRAR</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={estilos.produtoSugestao}>
-            <Image source={require('../../assets/img/produto3.png')} style={estilos.sugestaoImg} />
-            <Text style={estilos.sugestaoPreco}>R$ 299,90</Text>
-            <TouchableOpacity style={estilos.comprarBtn} onPress={() => navigation.navigate('Detalhes2' as never)}>
-              <Text style={estilos.comprarTxt}>COMPRAR</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        <View style={estilos.subtotal}>
-          <Text style={estilos.subtotalTxt}>Subtotal R$ {subtotal.toFixed(2)}</Text>
-          <TouchableOpacity style={estilos.finalizarBtn}>
-            <Text style={estilos.finalizarTxt}
-              onPress={() => navigation.navigate('InfoEntrega' as never)}>
-              Concluir pedido</Text>
-          </TouchableOpacity>
-        </View>
+          </>
+        )}
       </ScrollView>
-
-
-      
     </SafeAreaView>
   );
 }

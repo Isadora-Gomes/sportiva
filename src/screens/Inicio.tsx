@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import { Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationParameter } from "../routes/Routes";
@@ -7,6 +7,8 @@ import { NavigationParameter } from "../routes/Routes";
 import { FontAwesome6 as Icon } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DrawerActions } from '@react-navigation/native';
+import { Product } from "../features/product";
+import { Success, Failure } from "../util/result";
 
 const Inicio = ({ navigation }: NavigationParameter) => {
   const insets = useSafeAreaInsets();
@@ -19,48 +21,46 @@ const Inicio = ({ navigation }: NavigationParameter) => {
 
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  // Estados para produtos reais
+  const [produtos, setProdutos] = useState<Product[]>([]);
+  const [loadingProdutos, setLoadingProdutos] = useState(true);
 
-  const mochilas = [
-    { id: '1', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluegbag.png') },
-    { id: '2', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/pinkbag.png') },
-    { id: '3', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/bluebag.png') },
-    { id: '4', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/graybagback.png') },
-    { id: '5', nome: 'Mochilha pop', preco: 'R$ 120,30', imagem: require('../../assets/img/pinkbag.png') },
-  ];
+  // Função para carregar produtos
+  const carregarProdutos = async () => {
+    setLoadingProdutos(true);
+    try {
+      const resultado = await Product.list();
+      if (resultado instanceof Success) {
+        setProdutos(resultado.result);
+      } else if (resultado instanceof Failure) {
+        console.error("Erro ao carregar produtos:", resultado.failure);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar produtos:", error);
+    } finally {
+      setLoadingProdutos(false);
+    }
+  };
 
-  const camisas = [
-    { id: '1', nome: 'Camisa Flow', preco: 'R$ 102,29', imagem: require('../../assets/img/graytshirt.png') },
-    { id: '2', nome: 'Camiseta esportiva', preco: 'R$ 88,10', imagem: require('../../assets/img/bluetshirt.png') },
-    { id: '3', nome: 'Camiseta cinza', preco: 'R$ 95,00', imagem: require('../../assets/img/drakgraytshirt.png') },
-    { id: '4', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/greentshirt.png') },
-    { id: '5', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/bluetshirt.png') },
-    { id: '6', nome: 'Camisa térmica', preco: 'R$ 135,80', imagem: require('../../assets/img/graytshirt.png') },
-  ];
+  useEffect(() => {
+    carregarProdutos();
+  }, []);
 
-  const garrafas = [
-    { id: '1', nome: 'Garrafa Power', preco: 'R$ 78,29', imagem: require('../../assets/img/bluebottle.png') },
-    { id: '2', nome: 'Aqua Sport', preco: 'R$ 88,10', imagem: require('../../assets/img/orangebottle.png') },
-    { id: '3', nome: 'Garrafa Slim', preco: 'R$ 95,00', imagem: require('../../assets/img/blackbluebottle.png') },
-    { id: '4', nome: 'Garrafa Chill', preco: 'R$ 135,80', imagem: require('../../assets/img/blackbottle.png') },
-  ];
+  // Separar produtos por categoria
+  const mochilas = produtos.filter(p => p.categoria.toLowerCase().includes('mochila'));
+  const camisas = produtos.filter(p => p.categoria.toLowerCase().includes('camisa') || p.categoria.toLowerCase().includes('camiseta'));
+  const garrafas = produtos.filter(p => p.categoria.toLowerCase().includes('garrafa') || p.categoria.toLowerCase().includes('acessório'));
+  const tenis = produtos.filter(p => p.categoria.toLowerCase().includes('tenis') || p.categoria.toLowerCase().includes('tênis'));
 
-  const tenis = [
-    { id: '1', nome: 'Run X Pro', preco: 'R$ 102,29', imagem: require('../../assets/img/pinktenis.png') },
-    { id: '2', nome: 'Pulse Air', preco: 'R$ 88,10', imagem: require('../../assets/img/blacktenis.png') },
-    { id: '3', nome: 'Storm Fit', preco: 'R$ 95,00', imagem: require('../../assets/img/whitetenis.png') },
-    { id: '4', nome: 'Ultra Step', preco: 'R$ 135,80', imagem: require('../../assets/img/orangetenis.png') },
-  ];
-
-  interface ProdutoBase { id: string; nome: string; preco: string; imagem: any; }
-  interface Mochila extends ProdutoBase { }
-  interface Camisa extends ProdutoBase { }
-
-  const CarroselProdutos = ({ item }: { item: Mochila }) => (
-    <View style={[estilos.itemCar, { backgroundColor: '#2a2a2a', borderColor: '#8400FF', borderWidth: 1,}]}>
-      <Image source={item.imagem} style={[estilos.imagemCar, { width: 130, height: 130, borderTopLeftRadius: 8, borderTopRightRadius: 8, }]} />
+  const CarroselProdutos = ({ item }: { item: Product }) => (
+    <TouchableOpacity 
+      style={[estilos.itemCar, { backgroundColor: '#2a2a2a', borderColor: '#8400FF', borderWidth: 1,}]}
+      onPress={() => navigation.navigate('Detalhes', item)}
+    >
+      <Image source={{ uri: item.imagem.getUrl() }} style={[estilos.imagemCar, { width: 130, height: 130, borderTopLeftRadius: 8, borderTopRightRadius: 8, }]} />
       <Text style={[estilos.nomeCar, { color: '#fff' }]}>{item.nome}</Text>
-      <Text style={[estilos.precoCar, { color: '#D5A8FF', fontWeight: '700' }]}>{item.preco}</Text>
-    </View>
+      <Text style={[estilos.precoCar, { color: '#D5A8FF', fontWeight: '700' }]}>R$ {item.preco.toFixed(2).replace('.', ',')}</Text>
+    </TouchableOpacity>
   );
 
   return (
@@ -93,53 +93,71 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={estilos.carrosselContainer}
         >
+          {/* Exibir produtos reais se carregados */}
+          {produtos.slice(0, 5).map((produto, index) => (
+            <TouchableOpacity
+              key={produto.id}
+              style={estilos.cardOferta}
+              onPress={() => navigation.navigate('Detalhes', produto)}
+            >
+              <Image
+                source={{ uri: produto.imagem.getUrl() }}
+                style={estilos.imgOferta}
+                resizeMode="contain"
+              />
+              <Text style={estilos.precoOferta}>R$ {produto.preco.toFixed(2).replace('.', ',')}</Text>
+            </TouchableOpacity>
+          ))}
 
-          <View style={estilos.cardOferta}>
-            <Image
-              source={require('../../assets/img/produto3.png')}
-              style={estilos.imgOferta}
-              resizeMode="contain"
-            />
-            <Text style={estilos.precoOferta}>R$99,90</Text>
-          </View>
+          {/* Fallback para produtos hardcoded se não carregou do banco */}
+          {produtos.length === 0 && (
+            <>
+              <View style={estilos.cardOferta}>
+                <Image
+                  source={require('../../assets/img/produto3.png')}
+                  style={estilos.imgOferta}
+                  resizeMode="contain"
+                />
+                <Text style={estilos.precoOferta}>R$99,90</Text>
+              </View>
 
+              <View style={estilos.cardOferta}>
+                <Image
+                  source={require('../../assets/img/produto4.png')}
+                  style={estilos.imgOferta}
+                  resizeMode="contain"
+                />
+                <Text style={estilos.precoOferta}>R$59,90</Text>
+              </View>
 
-          <View style={estilos.cardOferta}>
-            <Image
-              source={require('../../assets/img/produto4.png')}
-              style={estilos.imgOferta}
-              resizeMode="contain"
-            />
-            <Text style={estilos.precoOferta}>R$59,90</Text>
-          </View>
+              <View style={estilos.cardOferta}>
+                <Image
+                  source={require('../../assets/img/graybag.png')}
+                  style={estilos.imgOferta}
+                  resizeMode="contain"
+                />
+                <Text style={estilos.precoOferta}>R$99,90</Text>
+              </View>
 
-          <View style={estilos.cardOferta}>
-            <Image
-              source={require('../../assets/img/graybag.png')}
-              style={estilos.imgOferta}
-              resizeMode="contain"
-            />
-            <Text style={estilos.precoOferta}>R$99,90</Text>
-          </View>
+              <View style={estilos.cardOferta}>
+                <Image
+                  source={require('../../assets/img/produto1.png')}
+                  style={estilos.imgOferta}
+                  resizeMode="contain"
+                />
+                <Text style={estilos.precoOferta}>R$49,90</Text>
+              </View>
 
-          <View style={estilos.cardOferta}>
-            <Image
-              source={require('../../assets/img/produto1.png')}
-              style={estilos.imgOferta}
-              resizeMode="contain"
-            />
-            <Text style={estilos.precoOferta}>R$49,90</Text>
-          </View>
-
-
-          <View style={estilos.cardOferta}>
-            <Image
-              source={require('../../assets/img/produto2.png')}
-              style={estilos.imgOferta}
-              resizeMode="contain"
-            />
-            <Text style={estilos.precoOferta}>R$199,90</Text>
-          </View>
+              <View style={estilos.cardOferta}>
+                <Image
+                  source={require('../../assets/img/produto2.png')}
+                  style={estilos.imgOferta}
+                  resizeMode="contain"
+                />
+                <Text style={estilos.precoOferta}>R$199,90</Text>
+              </View>
+            </>
+          )}
         </ScrollView>
 
 
@@ -149,63 +167,74 @@ const Inicio = ({ navigation }: NavigationParameter) => {
 
 
         <View style={estilos.geral}>
-          <View style={estilos.itemProduto}>
+          {/* Mostrar produtos reais por categoria se disponíveis */}
+          <TouchableOpacity 
+            style={estilos.itemProduto}
+            onPress={() => navigation.navigate('Produto')}
+          >
             <View style={estilos.colPreco}>
               <Image
-                source={require('../../assets/img/produto3.png')}
-                style={estilos.produto}
-              />
-
-            </View>
-            <View style={estilos.conteudo}>
-              <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>Mochila</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={estilos.itemProduto}>
-            <View style={estilos.colPreco}>
-              <Image
-                source={require('../../assets/img/produto4.png')}
+                source={mochilas[0] ? { uri: mochilas[0].imagem.getUrl() } : require('../../assets/img/produto3.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>Camisa</Text>
+                <Text style={estilos.nome}>{mochilas[0] ? mochilas[0].nome : "Mochila"}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
 
-          <View style={estilos.itemProduto}>
+          <TouchableOpacity 
+            style={estilos.itemProduto}
+            onPress={() => navigation.navigate('Produto')}
+          >
             <View style={estilos.colPreco}>
               <Image
-                source={require('../../assets/img/produto2.png')}
+                source={camisas[0] ? { uri: camisas[0].imagem.getUrl() } : require('../../assets/img/produto4.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>Garrafa</Text>
+                <Text style={estilos.nome}>{camisas[0] ? camisas[0].nome : "Camisa"}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
 
-
-          <View style={estilos.itemProduto}>
+          <TouchableOpacity 
+            style={estilos.itemProduto}
+            onPress={() => navigation.navigate('Produto')}
+          >
             <View style={estilos.colPreco}>
               <Image
-                source={require('../../assets/img/produto1.png')}
+                source={garrafas[0] ? { uri: garrafas[0].imagem.getUrl() } : require('../../assets/img/produto2.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>Tênis</Text>
+                <Text style={estilos.nome}>{garrafas[0] ? garrafas[0].nome : "Garrafa"}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={estilos.itemProduto}
+            onPress={() => navigation.navigate('Produto')}
+          >
+            <View style={estilos.colPreco}>
+              <Image
+                source={tenis[0] ? { uri: tenis[0].imagem.getUrl() } : require('../../assets/img/produto1.png')}
+                style={estilos.produto}
+              />
+            </View>
+            <View style={estilos.conteudo}>
+              <View style={estilos.topoItem}>
+                <Text style={estilos.nome}>{tenis[0] ? tenis[0].nome : "Tênis"}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={estilos.botaoFiltro} onPress={(redirecionarProduto)}>
@@ -284,41 +313,66 @@ const Inicio = ({ navigation }: NavigationParameter) => {
         </View>
 
         <View style={estilos.containerCar}>
-          <Text style={estilos.tituloCar}>Mochilas</Text>
-          <FlatList<Mochila>
-            data={mochilas}
-            renderItem={({ item }) => <CarroselProdutos item={item} />}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+          {loadingProdutos ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
+              <ActivityIndicator size="large" color="#8400FF" />
+              <Text style={{ color: '#fff', marginTop: 10 }}>Carregando produtos...</Text>
+            </View>
+          ) : (
+            <>
+              {mochilas.length > 0 && (
+                <>
+                  <Text style={estilos.tituloCar}>Mochilas</Text>
+                  <FlatList<Product>
+                    data={mochilas}
+                    renderItem={({ item }) => <CarroselProdutos item={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </>
+              )}
 
-          <Text style={estilos.tituloCar}>Camisas</Text>
-          <FlatList<Camisa>
-            data={camisas}
-            renderItem={({ item }) => <CarroselProdutos item={item} />}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+              {camisas.length > 0 && (
+                <>
+                  <Text style={estilos.tituloCar}>Camisas</Text>
+                  <FlatList<Product>
+                    data={camisas}
+                    renderItem={({ item }) => <CarroselProdutos item={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </>
+              )}
 
-          <Text style={estilos.tituloCar}>Garrafas</Text>
-          <FlatList<Mochila>
-            data={garrafas}
-            renderItem={({ item }) => <CarroselProdutos item={item} />}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+              {garrafas.length > 0 && (
+                <>
+                  <Text style={estilos.tituloCar}>Garrafas</Text>
+                  <FlatList<Product>
+                    data={garrafas}
+                    renderItem={({ item }) => <CarroselProdutos item={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </>
+              )}
 
-          <Text style={estilos.tituloCar}>Tênis</Text>
-          <FlatList<Camisa>
-            data={tenis}
-            renderItem={({ item }) => <CarroselProdutos item={item} />}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+              {tenis.length > 0 && (
+                <>
+                  <Text style={estilos.tituloCar}>Tênis</Text>
+                  <FlatList<Product>
+                    data={tenis}
+                    renderItem={({ item }) => <CarroselProdutos item={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </>
+              )}
+            </>
+          )}
         </View>
 
         {/* <View style={estilos.switchContainer}>
