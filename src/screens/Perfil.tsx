@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { NavigationParameter } from "../routes/Routes";
 import { useFocusEffect } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker';
 import { User } from "../features/user";
 import { Success, Failure } from "../util/result";
 
@@ -24,7 +23,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
     const [senhaAtual, setSenhaAtual] = useState('');
     const [novaSenha, setNovaSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
-    const [imageUri, setImageUri] = useState<string | null>(null);
+    
     
     // Estados de edição
     const [editandoNome, setEditandoNome] = useState(false);
@@ -39,9 +38,6 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                 setUser(userSession);
                 setNome(userSession.nome);
                 setEmail(userSession.email);
-                if (userSession.imagem) {
-                    setImageUri(userSession.imagem.getUrl());
-                }
             }
         } catch (error) {
             console.error('Erro ao carregar dados do usuário:', error);
@@ -60,18 +56,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
         }, [])
     );
 
-    const pickImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 0.7,
-            allowsEditing: true,
-            aspect: [1, 1],
-        });
-
-        if (!result.canceled) {
-            setImageUri(result.assets[0].uri);
-        }
-    };
+    
 
     const salvarAlteracoes = async () => {
         if (!user) {
@@ -110,38 +95,25 @@ const Perfil = ({ navigation }: NavigationParameter) => {
             let alteracaoSucesso = true;
             let mensagensErro: string[] = [];
 
-            // Atualizar nome se foi editado
+        
             if (editandoNome && nome !== user.nome) {
                 user.nome = nome;
-                // Aqui você implementaria a atualização no banco
-                // const result = await user.updateNome(nome);
+
                 console.log('Atualizando nome para:', nome);
             }
 
-            // Atualizar email se foi editado
             if (editandoEmail && email !== user.email) {
                 user.email = email;
-                // Aqui você implementaria a atualização no banco
-                // const result = await user.updateEmail(email);
                 console.log('Atualizando email para:', email);
             }
 
-            // Atualizar senha se foi editada
+            
             if (editandoSenha) {
-                // Aqui você implementaria a mudança de senha
-                // const result = await user.changePassword(senhaAtual, novaSenha);
                 console.log('Atualizando senha');
                 setSenhaAtual('');
                 setNovaSenha('');
                 setConfirmarSenha('');
-            }
-
-            // Atualizar foto se foi alterada
-            if (imageUri && imageUri !== user.imagem?.getUrl()) {
-                // Aqui você implementaria o upload da imagem
-                // const result = await user.updateProfileImage(imageUri);
-                console.log('Atualizando foto de perfil');
-            }
+            }     
 
             if (alteracaoSucesso) {
                 Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
@@ -185,11 +157,6 @@ const Perfil = ({ navigation }: NavigationParameter) => {
         if (user) {
             setNome(user.nome);
             setEmail(user.email);
-            if (user.imagem) {
-                setImageUri(user.imagem.getUrl());
-            } else {
-                setImageUri(null);
-            }
         }
         setSenhaAtual('');
         setNovaSenha('');
@@ -226,28 +193,15 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                     <View style={styles.headerSpacer} />
                 </View>
 
-                {/* Foto do Perfil */}
-                <View style={styles.profileImageSection}>
-                    <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
-                        {imageUri ? (
-                            <Image source={{ uri: imageUri }} style={styles.profileImage} />
-                        ) : (
-                            <View style={styles.profileImagePlaceholder}>
-                                <Ionicons name="person" size={60} color="#CCCCCC" />
-                            </View>
-                        )}
-                        <View style={styles.editImageOverlay}>
-                            <Ionicons name="camera" size={16} color="#FFF" />
-                        </View>
-                    </TouchableOpacity>
-                    <Text style={styles.profileName}>{user?.nome || 'Usuário'}</Text>
-                </View>
+      
+                    <View style={styles.profileImageSection}>
+                        <Text style={styles.profileName}>{user?.nome || 'Usuário'}</Text>
+                    </View>
 
-                {/* Seção de Informações Pessoais */}
+             
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Informações Pessoais</Text>
-                    
-                    {/* Nome */}
+               
                     <View style={styles.fieldContainer}>
                         <Text style={styles.fieldLabel}>Nome</Text>
                         {editandoNome ? (
@@ -283,7 +237,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                     style={styles.editIcon}
                                     onPress={() => setEditandoNome(true)}
                                 >
-                                    <Ionicons name="pencil" size={16} color="#6CB9FF" />
+                                    <Ionicons name="pencil" size={16} color="#8400FF" />
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -327,7 +281,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                     style={styles.editIcon}
                                     onPress={() => setEditandoEmail(true)}
                                 >
-                                    <Ionicons name="pencil" size={16} color="#6CB9FF" />
+                                    <Ionicons name="pencil" size={16} color="#8400FF" />
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -348,7 +302,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                         <Ionicons 
                             name={editandoSenha ? "chevron-up" : "chevron-down"} 
                             size={20} 
-                            color="#6CB9FF" 
+                            color="#8400FF" 
                         />
                     </TouchableOpacity>
 
@@ -379,9 +333,9 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                     )}
                 </View>
 
-                {/* Botões de Ação */}
+                
                 <View style={styles.actionButtons}>
-                    {(editandoNome || editandoEmail || editandoSenha || imageUri !== user?.imagem?.getUrl()) && (
+                    {(editandoNome || editandoEmail || editandoSenha) && (
                         <View style={styles.saveSection}>
                             <TouchableOpacity 
                                 style={styles.cancelAllButton}
@@ -413,13 +367,13 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Menu de Navegação */}
+               
                 <View style={styles.navigationMenu}>
                     <TouchableOpacity 
                         style={styles.navButton}
                         onPress={() => navigation.navigate('HistoricoCompras')}
                     >
-                        <Ionicons name="receipt-outline" size={20} color="#6CB9FF" />
+                        <Ionicons name="receipt-outline" size={20} color="#8400FF" />
                         <Text style={styles.navButtonText}>Histórico de Compras</Text>
                         <Ionicons name="chevron-forward" size={16} color="#CCCCCC" />
                     </TouchableOpacity>
@@ -428,7 +382,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                         style={styles.navButton}
                         onPress={() => navigation.navigate('Carrinho')}
                     >
-                        <Ionicons name="cart-outline" size={20} color="#6CB9FF" />
+                        <Ionicons name="cart-outline" size={20} color="#8400FF" />
                         <Text style={styles.navButtonText}>Meu Carrinho</Text>
                         <Ionicons name="chevron-forward" size={16} color="#CCCCCC" />
                     </TouchableOpacity>
@@ -441,26 +395,26 @@ const Perfil = ({ navigation }: NavigationParameter) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: '#0f0f10',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 16,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#141416',
         borderBottomWidth: 1,
-        borderBottomColor: '#E1E8ED',
+        borderBottomColor: '#2b2b2b',
     },
     backButton: {
         padding: 8,
         borderRadius: 20,
-        backgroundColor: '#F0F0F0',
+        backgroundColor: '#141416',
     },
     title: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#333',
+        color: '#ffffff',
         textAlign: 'center',
         flex: 1,
     },
@@ -470,47 +424,18 @@ const styles = StyleSheet.create({
     profileImageSection: {
         alignItems: 'center',
         paddingVertical: 24,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#141416',
         marginTop: 8,
     },
-    profileImageContainer: {
-        position: 'relative',
-        marginBottom: 12,
-    },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-    },
-    profileImagePlaceholder: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: '#F0F0F0',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    editImageOverlay: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: '#6CB9FF',
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-    },
+    /* imagem removida */
     profileName: {
         fontSize: 20,
         fontWeight: '600',
-        color: '#333',
+        color: '#ffffff',
         marginTop: 8,
     },
     section: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#141416',
         marginTop: 8,
         paddingVertical: 20,
         paddingHorizontal: 20,
@@ -518,7 +443,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#333',
+        color: '#ffffff',
         marginBottom: 16,
     },
     fieldContainer: {
@@ -536,14 +461,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 12,
         paddingHorizontal: 16,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: '#141416',
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#E1E8ED',
+        borderColor: '#2b2b2b',
     },
     fieldValue: {
         fontSize: 16,
-        color: '#333',
+        color: '#ffffff',
         flex: 1,
     },
     editIcon: {
@@ -558,12 +483,12 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 12,
         paddingHorizontal: 16,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#0f0f10',
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#E1E8ED',
+        borderColor: '#2b2b2b',
         fontSize: 16,
-        color: '#333',
+        color: '#ffffff',
     },
     editButtons: {
         flexDirection: 'row',
@@ -580,7 +505,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFE5E5',
     },
     saveButton: {
-        backgroundColor: '#E5F9F6',
+        backgroundColor: '#F3E8FF',
     },
     passwordButton: {
         flexDirection: 'row',
@@ -588,14 +513,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 12,
         paddingHorizontal: 16,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: '#141416',
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#E1E8ED',
+        borderColor: '#2b2b2b',
     },
     passwordButtonText: {
         fontSize: 16,
-        color: '#6CB9FF',
+        color: '#9e4becff',
         fontWeight: '500',
     },
     passwordSection: {
@@ -615,9 +540,9 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#E1E8ED',
+        borderColor: '#2b2b2b',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#141416',
     },
     cancelAllButtonText: {
         color: '#666',
@@ -629,10 +554,10 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',
-        backgroundColor: '#6CB9FF',
+        backgroundColor: '#8400FF',
     },
     saveAllButtonDisabled: {
-        backgroundColor: '#B0D4FF',
+        backgroundColor: '#BFA3FF',
     },
     saveAllButtonText: {
         color: '#FFFFFF',
@@ -647,7 +572,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#FFE5E5',
-        backgroundColor: '#FFF5F5',
+        backgroundColor: '#2a0f0f',
         gap: 8,
     },
     logoutButtonText: {
@@ -656,7 +581,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     navigationMenu: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#212123ff',
         marginTop: 8,
         paddingVertical: 8,
     },
@@ -669,10 +594,10 @@ const styles = StyleSheet.create({
     },
     navButtonText: {
         fontSize: 16,
-        color: '#333',
+        color: '#c3bebeff',
         flex: 1,
     },
-    // Styles antigos mantidos para compatibilidade
+
     background: {
         flex: 1,
         backgroundColor: '#000',
@@ -748,18 +673,7 @@ const styles = StyleSheet.create({
         color: '#8400FF',
         textDecorationLine: 'underline',
     },
-    divfoto: {
-        alignItems: "center",
-        marginBottom: 20,
-    },
-    foto: {
-        width: 140,
-        height: 140,
-        borderRadius: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 13,
-    },
+    /* estilos de imagem removidos */
 });
 
 export default Perfil;
