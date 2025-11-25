@@ -183,13 +183,13 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           >
             <View style={estilos.colPreco}>
               <Image
-                source={mochilas[0] ? { uri: mochilas[0].imagem.getUrl() } : require('../../assets/img/produto3.png')}
+                source={require('../../assets/img/produto3.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>{mochilas[0] ? mochilas[0].nome : "Mochila"}</Text>
+                <Text style={estilos.nome}>{"Mochila"}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -200,13 +200,13 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           >
             <View style={estilos.colPreco}>
               <Image
-                source={camisas[0] ? { uri: camisas[0].imagem.getUrl() } : require('../../assets/img/produto4.png')}
+                source={require('../../assets/img/produto4.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>{camisas[0] ? camisas[0].nome : "Camisa"}</Text>
+                <Text style={estilos.nome}>{"Camisa"}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -217,13 +217,13 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           >
             <View style={estilos.colPreco}>
               <Image
-                source={garrafas[0] ? { uri: garrafas[0].imagem.getUrl() } : require('../../assets/img/produto2.png')}
+                source={require('../../assets/img/produto2.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>{garrafas[0] ? garrafas[0].nome : "Garrafa"}</Text>
+                <Text style={estilos.nome}>{"Garrafa"}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -234,13 +234,13 @@ const Inicio = ({ navigation }: NavigationParameter) => {
           >
             <View style={estilos.colPreco}>
               <Image
-                source={tenis[0] ? { uri: tenis[0].imagem.getUrl() } : require('../../assets/img/produto1.png')}
+                source={require('../../assets/img/produto1.png')}
                 style={estilos.produto}
               />
             </View>
             <View style={estilos.conteudo}>
               <View style={estilos.topoItem}>
-                <Text style={estilos.nome}>{tenis[0] ? tenis[0].nome : "Tênis"}</Text>
+                <Text style={estilos.nome}>{"Tênis"}</Text>
               </View>
             </View>
           </TouchableOpacity>

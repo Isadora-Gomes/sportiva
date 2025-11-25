@@ -33,31 +33,6 @@ const InfoEntrega = () => {
                 <Image source={require('../../assets/img/logo2.png')} />
             </View>
 
-            <View style={estilos.cupomContainer}>
-                <Text style={estilos.prefixo}>CUPOM:</Text>
-                <TextInput
-                    style={estilos.input}
-                    value={cupom}
-                    onChangeText={setCupom}
-                    underlineColorAndroid="transparent"
-                />
-                <TouchableOpacity style={estilos.aplicar}>
-                    <Text>Aplicar</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={estilos.produtoContainer}>
-                <Image source={require('../../assets/img/produto4.png')} style={estilos.produtoImagem} />
-                <View style={estilos.produtoInfo}>
-                    <Text style={estilos.produtoNome}>CAMISETA FLOW</Text>
-                    <Text style={estilos.produtoPreco}>R$ 199,90</Text>
-                    <Text style={estilos.produtoDetalhe}>Camiseta roxa</Text>
-                    <Text style={estilos.produtoDetalhe}>Tamanho M</Text>
-                </View>
-            </View>
-
-            <Text style={estilos.subtotal}>SUBTOTAL : R$ 199,90</Text>
-
             <View style={{ width: '100%' }} onLayout={(e) => setInputsY(e.nativeEvent.layout.y)}>
                 <Text style={estilos.entregaTitulo}>Informações de entrega</Text>
                 <TextInput
