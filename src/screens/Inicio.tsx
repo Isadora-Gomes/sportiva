@@ -357,7 +357,7 @@ const Inicio = ({ navigation }: NavigationParameter) => {
 
               {garrafas.length > 0 && (
                 <>
-                  <Text style={estilos.tituloCar}>Garrafas</Text>
+                  <Text style={estilos.tituloCar}>Acessórios</Text>
                   <FlatList<Product>
                     data={garrafas}
                     renderItem={({ item }) => <CarroselProdutos item={item} />}
