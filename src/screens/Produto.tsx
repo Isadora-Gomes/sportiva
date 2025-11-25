@@ -53,6 +53,15 @@ export default function App({ navigation }: NavigationParameter) {
     carregarProdutos();
   }, [selectedCategory]);
 
+  // Recarregar produtos quando a tela ganhar foco
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      carregarProdutos();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const cadastrar = async () => {
     // Validar campos obrigatórios
     if (!novoItem.nome.trim()) {
@@ -178,6 +187,34 @@ export default function App({ navigation }: NavigationParameter) {
   const removeSizeAt = (idx: number) => setSizes(prev => prev.filter((_, i) => i !== idx));
   const updateSize = (idx: number, v: string) => setSizes(prev => prev.map((s, i) => i === idx ? v : s));
 
+  const deletarProduto = async (produtoId: string, nomeProduto: string) => {
+    Alert.alert(
+      'Confirmar exclusão',
+      `Tem certeza que deseja deletar o produto "${nomeProduto}"?`,
+      [
+        { text: 'Cancelar', onPress: () => {}, style: 'cancel' },
+        {
+          text: 'Deletar',
+          onPress: async () => {
+            try {
+              const resultado = await Product.delete(produtoId);
+              if (resultado instanceof Success) {
+                Alert.alert('Sucesso', 'Produto deletado com sucesso!');
+                carregarProdutos();
+              } else if (resultado instanceof Failure) {
+                Alert.alert('Erro', String(resultado.failure));
+              }
+            } catch (error) {
+              console.error('Erro ao deletar produto:', error);
+              Alert.alert('Erro', 'Erro interno ao deletar produto');
+            }
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+
   const pickImage = async () => {
     try {
       const ImagePicker = require('expo-image-picker');
@@ -245,9 +282,9 @@ export default function App({ navigation }: NavigationParameter) {
         </ImageBackground>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 6, paddingHorizontal: 12 }}>
-          <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
+          {/* <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
             <Text style={estilos.textoFiltro}>FILTROS</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setShowModal(true)}>
             <Icon name="plus" size={14} color="#fff" />
           </TouchableOpacity>
@@ -306,25 +343,32 @@ export default function App({ navigation }: NavigationParameter) {
           </View>
         ) : (
           produtos.map(produto => (
-            <TouchableOpacity 
-              key={produto.id} 
-              style={estilos.itemProduto} 
-              onPress={() => navigation.navigate('Detalhes', produto)}
-            >
-              <View style={estilos.colPreco}>
-                <Image source={{ uri: produto.imagem.getUrl() }} style={estilos.produto} />
-                <Text style={estilos.preco}>R$ {produto.preco.toFixed(2).replace('.', ',')}</Text>
-              </View>
-              <View style={estilos.conteudo}>
-                <View style={estilos.topoItem}>
-                  <Text style={estilos.nome}>{produto.nome}</Text>
-                  <View style={estilos.notaBox}>
-                    <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
-                  </View>
+            <View key={produto.id} style={estilos.itemContainer}>
+              <TouchableOpacity 
+                style={estilos.itemProduto} 
+                onPress={() => navigation.navigate('Detalhes', produto)}
+              >
+                <View style={estilos.colPreco}>
+                  <Image source={{ uri: produto.imagem.getUrl() }} style={estilos.produto} />
+                  <Text style={estilos.preco}>R$ {produto.preco.toFixed(2).replace('.', ',')}</Text>
                 </View>
-                <Text style={estilos.descricao}>{produto.descricao}</Text>
-              </View>
-            </TouchableOpacity>
+                <View style={estilos.conteudo}>
+                  <View style={estilos.topoItem}>
+                    <Text style={estilos.nome}>{produto.nome}</Text>
+                    {/* <View style={estilos.notaBox}>
+                      <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
+                    </View> */}
+                  </View>
+                  <Text style={estilos.descricao}>{produto.descricao}</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={estilos.btnDeleteProduto}
+                onPress={() => deletarProduto(produto.id.toString(), produto.nome)}
+              >
+                <Text style={estilos.textDeleteProduto}>✕</Text>
+              </TouchableOpacity>
+            </View>
           ))
         )}
 
@@ -672,5 +716,27 @@ const estilos = StyleSheet.create({
     color: '#f5a623',
     fontWeight: '700',
     textAlign: 'center'
+  },
+  itemContainer: {
+    position: 'relative',
+    marginBottom: 12,
+    marginHorizontal: 12,
+  },
+  btnDeleteProduto: {
+    position: 'absolute',
+    top: 8,
+    right: 23,
+    width: 28,
+    height: 28,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 5,
+  },
+  textDeleteProduto: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    lineHeight: 20,
   },
 });

@@ -1,6 +1,6 @@
 // camisa
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, Modal, FlatList } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Alert, Modal, FlatList, TextInput } from "react-native";
 import Icon from "../components/icon";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -11,12 +11,16 @@ import { User } from "../features/user";
 
 export default function Detalhes({ navigation, route: { params: product } }: NavigationParameter<"Detalhes">) {
 	const insets = useSafeAreaInsets();
+	const [liked, setLiked] = useState(false);
 	
 	// Usar apenas a imagem do produto ao invés de múltiplas imagens
 	const productImage = product.imagem.getUrl();
 
 	const [modalVisivel, setModalVisivel] = useState(false);
 	const [userAuth, setUserAuth] = useState(User.auth);
+
+	const [comentarioTexto, setComentarioTexto] = useState('');
+	const [comentariosLocais, setComentariosLocais] = useState<Array<{ id: string; texto: string; date: string }>>([]);
 
 	const [avaliacoes, setAvaliacoes] = useState<Evaluation[]>([]);
 
@@ -81,7 +85,13 @@ export default function Detalhes({ navigation, route: { params: product } }: Nav
 			<ScrollView contentContainerStyle={styles.content}>
 				<View style={styles.topbar}>
 					<TouchableOpacity style={styles.iconBtn} onPress={() => navigation.navigate('Produto' as never)}><Icon name="chevron-left" size={20} color="#fff" /></TouchableOpacity>
-					<TouchableOpacity style={styles.iconBtn}><Icon name="heart" size={20} color="#fff" /></TouchableOpacity>
+					<TouchableOpacity
+						style={styles.iconBtn}
+						onPress={() => setLiked(prev => !prev)}
+					>
+						{/* Apenas visual: alterna preenchimento/cor do coração */}
+						<Icon name={liked ? 'heart' : 'heart'} size={20} color={liked ? '#ff4d6d' : '#fff'} fill={liked} />
+					</TouchableOpacity>
 				</View>
 
 				<View style={styles.carouselWrap}>
@@ -92,8 +102,8 @@ export default function Detalhes({ navigation, route: { params: product } }: Nav
 				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 					<Text style={styles.price}>R$ {product.preco.toFixed(2).replace('.', ',')}</Text>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-						<Icon name="star" size={16} color="#ffd455" />
-						<Text style={styles.rating}>4.5</Text>
+						{/* <Icon name="star" size={16} color="#ffd455" />
+						<Text style={styles.rating}>4.5</Text> */}
 						<TouchableOpacity onPress={() => setModalVisivel(true)} style={{ marginLeft: 10 }}>
 							<Icon name="comment" size={16} color="#fff" />
 						</TouchableOpacity>
@@ -140,42 +150,56 @@ export default function Detalhes({ navigation, route: { params: product } }: Nav
   onRequestClose={() => setModalVisivel(false)}
 >
   <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitulo}>COMENTÁRIOS</Text>
-      <View style={styles.linhaSeparadora} />
+			<View style={styles.modalContainer}>
+			<Text style={styles.modalTitulo}>COMENTÁRIOS</Text>
+			<View style={styles.linhaSeparadora} />
 
-      <FlatList
-        data={avaliacoes}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.comentarioBox}>
-            <View style={styles.comentarioHeader}>
-              <Icon name="user-circle" size={22} color="#A77BFF" />
-              <Text style={styles.comentarioNome}>{item.usuario.nome}</Text>
-              <View style={styles.estrelasContainer}>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Icon
-                    key={i}
-                    name="star"
-                    size={16}
-                    color={i <= item.nota ? '#FFD700' : '#777'}
-                    style={{ marginLeft: 2 }}
-                  />
-                ))}
-              </View>
-            </View>
-            <Text style={styles.comentarioTexto}>{item.comentario}</Text>
-          </View>
-        )}
-      />
+			{/* Input simples para adicionar comentário local (não persiste no backend) */}
+			<TextInput
+				placeholder="Escreva seu comentário..."
+				placeholderTextColor="#999"
+				style={styles.commentInput}
+				value={comentarioTexto}
+				onChangeText={setComentarioTexto}
+				multiline
+			/>
+			<View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 12 }}>
+				<TouchableOpacity
+					style={styles.sendButton}
+					onPress={() => {
+						const texto = comentarioTexto.trim();
+						if (!texto) return;
+						const novo = { id: Date.now().toString(), texto, date: new Date().toISOString() };
+						setComentariosLocais(prev => [novo, ...prev]);
+						setComentarioTexto('');
+					}}
+				>
+					<Text style={styles.sendButtonText}>Enviar</Text>
+				</TouchableOpacity>
+			</View>
 
-      <TouchableOpacity
-        style={styles.botaoFechar}
-        onPress={() => setModalVisivel(false)}
-      >
-        <Text style={styles.textoFechar}>Fechar</Text>
-      </TouchableOpacity>
-    </View>
+			{/* Combina avaliações do servidor com comentários locais */}
+			<FlatList
+				data={[...comentariosLocais.map(c => ({ id: c.id, texto: c.texto, local: true, date: c.date, nome: 'Você' })), ...avaliacoes.map(a => ({ id: 'srv-' + a.id, texto: a.comentario || '', local: false, nome: a.usuario ? a.usuario.nome : 'Usuário', date: a.data ? String(a.data) : '' })) ]}
+				keyExtractor={(item) => item.id.toString()}
+				renderItem={({ item }) => (
+					<View style={styles.comentarioBox}>
+						<View style={styles.comentarioHeader}>
+							<Icon name="user-circle" size={22} color={item.local ? '#A77BFF' : '#A77BFF'} />
+							<Text style={styles.comentarioNome}>{item.nome}</Text>
+						</View>
+						<Text style={styles.comentarioTexto}>{item.texto}</Text>
+					</View>
+				)}
+			/>
+
+			<TouchableOpacity
+				style={styles.botaoFechar}
+				onPress={() => setModalVisivel(false)}
+			>
+				<Text style={styles.textoFechar}>Fechar</Text>
+			</TouchableOpacity>
+		</View>
   </View>
 </Modal>
 
@@ -272,5 +296,28 @@ textoFechar: {
   color: '#fff',
   fontWeight: '700',
 },
+
+commentInput: {
+	borderWidth: 1,
+	borderColor: '#333',
+	backgroundColor: '#121212',
+	color: '#fff',
+	padding: 10,
+	borderRadius: 8,
+	marginBottom: 8,
+	minHeight: 44,
+	textAlignVertical: 'top',
+},
+sendButton: {
+	backgroundColor: '#A77BFF',
+	paddingVertical: 8,
+	paddingHorizontal: 12,
+	borderRadius: 8,
+},
+sendButtonText: {
+	color: '#042018',
+	fontWeight: '700',
+},
+/* comentário styles já definidos acima - evitar duplicação */
 
 });
