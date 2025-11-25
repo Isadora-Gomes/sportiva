@@ -46,6 +46,15 @@ const Inicio = ({ navigation }: NavigationParameter) => {
     carregarProdutos();
   }, []);
 
+  // Recarregar produtos quando a tela ganhar foco
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      carregarProdutos();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   // Separar produtos por categoria
   const mochilas = produtos.filter(p => p.categoria.toLowerCase().includes('mochila'));
   const camisas = produtos.filter(p => p.categoria.toLowerCase().includes('camisa') || p.categoria.toLowerCase().includes('camiseta'));
@@ -364,6 +373,19 @@ const Inicio = ({ navigation }: NavigationParameter) => {
                   <Text style={estilos.tituloCar}>Tênis</Text>
                   <FlatList<Product>
                     data={tenis}
+                    renderItem={({ item }) => <CarroselProdutos item={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </>
+              )}
+
+              {produtos.length > 0 && (
+                <>
+                  <Text style={estilos.tituloCar}>Todos os Produtos</Text>
+                  <FlatList<Product>
+                    data={produtos}
                     renderItem={({ item }) => <CarroselProdutos item={item} />}
                     keyExtractor={(item) => item.id.toString()}
                     horizontal

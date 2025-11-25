@@ -181,6 +181,34 @@ export class Product {
         return new Success(produtos);
     }
 
+    static async delete(id: string | number): Promise<Result<void>> {
+        try {
+            const idNumber = typeof id === 'string' ? parseInt(id) : id;
+            
+            // Deletar a imagem do Supabase Storage
+            try {
+                const imagePath = `produtos/${idNumber}`;
+                await supabase.storage.from("imagens").remove([imagePath]);
+            } catch (error) {
+                console.log("Aviso: Não foi possível deletar a imagem:", error);
+                // Continuar mesmo se falhar a deleção da imagem
+            }
+
+            // Deletar o produto do banco de dados
+            const result = await supabase.from("produtos").delete().eq("id", idNumber);
+            
+            if (result.error) {
+                console.log(result.error);
+                return Failure.error("Não foi possível deletar o produto");
+            }
+            
+            return new Success(undefined);
+        } catch (error) {
+            console.error("Erro ao deletar produto:", error);
+            return Failure.error("Erro interno ao deletar produto");
+        }
+    }
+
     async getAvaliacoes(): Promise<Result<Evaluation[]>> {
         const resultDB = await supabase.from("avaliacoes").select("*").eq("produto", this.id);
         if (resultDB.error) {
