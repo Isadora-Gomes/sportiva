@@ -185,9 +185,9 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                 <View style={styles.header}>
                     <TouchableOpacity 
                         style={styles.backButton}
-                        onPress={() => navigation.goBack()}
+                        onPress={() => navigation.navigate('Inicio')}
                     >
-                        <Ionicons name="arrow-back" size={24} color="#333" />
+                        <Ionicons name="arrow-back" size={24} color="#ffffff" />
                     </TouchableOpacity>
                     <Text style={styles.title}>Meu Perfil</Text>
                     <View style={styles.headerSpacer} />
