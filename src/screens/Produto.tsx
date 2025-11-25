@@ -282,9 +282,9 @@ export default function App({ navigation }: NavigationParameter) {
         </ImageBackground>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 6, paddingHorizontal: 12 }}>
-          <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
+          {/* <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
             <Text style={estilos.textoFiltro}>FILTROS</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setShowModal(true)}>
             <Icon name="plus" size={14} color="#fff" />
           </TouchableOpacity>
@@ -355,9 +355,9 @@ export default function App({ navigation }: NavigationParameter) {
                 <View style={estilos.conteudo}>
                   <View style={estilos.topoItem}>
                     <Text style={estilos.nome}>{produto.nome}</Text>
-                    <View style={estilos.notaBox}>
+                    {/* <View style={estilos.notaBox}>
                       <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
-                    </View>
+                    </View> */}
                   </View>
                   <Text style={estilos.descricao}>{produto.descricao}</Text>
                 </View>
@@ -725,7 +725,7 @@ const estilos = StyleSheet.create({
   btnDeleteProduto: {
     position: 'absolute',
     top: 8,
-    right: 216,
+    right: 23,
     width: 28,
     height: 28,
     borderRadius: 16,
