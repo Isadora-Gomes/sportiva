@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#8400FF',
         paddingBottom: 5,
         textAlign: 'center',
-        width: 165,
+        width: 200,
     },
     label: {
         color: '#D2D2D2',

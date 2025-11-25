@@ -16,6 +16,8 @@ export default function App({ navigation }: NavigationParameter) {
   // Estados para produtos
   const [produtos, setProdutos] = useState<Product[]>([]);
   const [loadingProdutos, setLoadingProdutos] = useState(true);
+  const [searchText, setSearchText] = useState('');
+  const [visibleProdutos, setVisibleProdutos] = useState<Product[]>([]);
 
   // modal: adicionar produto
   const [showModal, setShowModal] = useState(false);
@@ -36,6 +38,8 @@ export default function App({ navigation }: NavigationParameter) {
       const resultado = await Product.list(selectedCategory || undefined);
       if (resultado instanceof Success) {
         setProdutos(resultado.result);
+        // inicializa lista visível com todos os produtos carregados
+        setVisibleProdutos(resultado.result);
       } else if (resultado instanceof Failure) {
         console.error("Erro ao carregar produtos:", resultado.failure);
         Alert.alert("Erro", "Não foi possível carregar os produtos");
@@ -61,6 +65,19 @@ export default function App({ navigation }: NavigationParameter) {
 
     return unsubscribe;
   }, [navigation]);
+
+  // Filtrar produtos localmente quando o texto de busca mudar ou produtos forem recarregados
+  useEffect(() => {
+    const q = searchText.trim().toLowerCase();
+    if (!q) {
+      setVisibleProdutos(produtos);
+      return;
+    }
+    const filtro = produtos.filter(p => {
+      return (p.nome && p.nome.toLowerCase().includes(q)) || (p.descricao && p.descricao.toLowerCase().includes(q));
+    });
+    setVisibleProdutos(filtro);
+  }, [searchText, produtos]);
 
   const cadastrar = async () => {
     // Validar campos obrigatórios
@@ -282,10 +299,24 @@ export default function App({ navigation }: NavigationParameter) {
         </ImageBackground>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 6, paddingHorizontal: 12 }}>
-          {/* <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setFiltersVisible(true)}>
-            <Text style={estilos.textoFiltro}>FILTROS</Text>
-          </TouchableOpacity> */}
-          <TouchableOpacity style={estilos.botaoFiltro} onPress={() => setShowModal(true)}>
+          <View style={estilos.searchRow}>
+            <Icon name="search" size={14} color="#999" />
+            <TextInput
+              placeholder="Buscar produtos..."
+              placeholderTextColor="#888"
+              style={estilos.searchInput}
+              value={searchText}
+              onChangeText={setSearchText}
+              returnKeyType="search"
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchText('')} style={estilos.clearButton}>
+                <Text style={{ color: '#fff' }}>✕</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <TouchableOpacity style={[estilos.botaoFiltro, { marginLeft: 8 }]} onPress={() => setShowModal(true)}>
             <Icon name="plus" size={14} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -335,14 +366,14 @@ export default function App({ navigation }: NavigationParameter) {
             <ActivityIndicator size="large" color="#1de99d" />
             <Text style={{ color: '#fff', marginTop: 10 }}>Carregando produtos...</Text>
           </View>
-        ) : produtos.length === 0 ? (
+        ) : visibleProdutos.length === 0 ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 50 }}>
             <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>
               Nenhum produto encontrado{selectedCategory ? ` na categoria "${selectedCategory}"` : ''}.
             </Text>
           </View>
         ) : (
-          produtos.map(produto => (
+          visibleProdutos.map(produto => (
             <View key={produto.id} style={estilos.itemContainer}>
               <TouchableOpacity 
                 style={estilos.itemProduto} 
@@ -355,9 +386,6 @@ export default function App({ navigation }: NavigationParameter) {
                 <View style={estilos.conteudo}>
                   <View style={estilos.topoItem}>
                     <Text style={estilos.nome}>{produto.nome}</Text>
-                    {/* <View style={estilos.notaBox}>
-                      <Text style={estilos.notaTexto}>4.5 <Icon name="star" size={12} color="#ffd455" /></Text>
-                    </View> */}
                   </View>
                   <Text style={estilos.descricao}>{produto.descricao}</Text>
                 </View>
@@ -716,6 +744,167 @@ const estilos = StyleSheet.create({
     color: '#f5a623',
     fontWeight: '700',
     textAlign: 'center'
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  searchRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1b1b1b',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    height: 40,
+  },
+  searchInput: {
+    flex: 1,
+    color: '#fff',
+    paddingHorizontal: 8,
+    height: '100%'
+  },
+  clearButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   itemContainer: {
     position: 'relative',

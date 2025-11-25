@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "teste-drawer",
-    "slug": "teste-drawer",
+    "name": "Sportiva",
+    "slug": "sportiva",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "../app_syncro_smartweb/src/assets/icone-logo/icone-syncro.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
