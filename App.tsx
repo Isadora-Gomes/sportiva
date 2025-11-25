@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 import React from "react";
-import { View, Text, TouchableOpacity, Image, StatusBar } from "react-native";
+import { View, Text, TouchableOpacity, Image, StatusBar, Alert } from "react-native";
 import { NavigationContainer, DrawerActions } from "@react-navigation/native";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { FontAwesome6 as Icon } from "@expo/vector-icons";
@@ -14,6 +14,28 @@ export default function App() {
   function CustomDrawerContent(props: any) {
     const currentRoute = props.state.routeNames[props.state.index];
     const navigation = props.navigation;
+
+    const logout = async () => {
+      Alert.alert(
+        "Confirmar Logout",
+        "Tem certeza que deseja sair?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Sair",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await User.logout();
+                navigation.navigate('Entrar');
+              } catch (error) {
+                console.error('Erro ao fazer logout:', error);
+              }
+            }
+          }
+        ]
+      );
+    };
 
     const items = [
       { label: "Início", icon: "house", route: "Inicio" },
@@ -71,7 +93,7 @@ export default function App() {
             paddingVertical: 10,
           }}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
             onPress={() => navigation.navigate("Perfil")}
           >
@@ -85,7 +107,7 @@ export default function App() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("Entrar")}>
+          <TouchableOpacity onPress={logout}>
             <Icon name="right-from-bracket" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -113,9 +135,15 @@ export default function App() {
               key={"Screen." + name}
               name={name}
               component={config.component}
-              options={config.options}
+              options={{
+                ...config.options,
+                swipeEnabled: name !== "Entrar" && name !== "Cadastro",
+                gestureEnabled: name !== "Entrar" && name !== "Cadastro",
+              }}
             />
           ))}
+
+          
         </Drawer.Navigator>
       </NavigationContainer>
     </View>

@@ -143,7 +143,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                     onPress: async () => {
                         try {
                             await User.logout();
-                            navigation.navigate('Inicio');
+                            navigation.navigate('Entrar');
                         } catch (error) {
                             console.error('Erro ao fazer logout:', error);
                         }
@@ -211,6 +211,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                     value={nome}
                                     onChangeText={setNome}
                                     placeholder="Seu nome"
+                                    placeholderTextColor={'#656565ff'}
                                 />
                                 <View style={styles.editButtons}>
                                     <TouchableOpacity 
@@ -254,6 +255,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                     onChangeText={setEmail}
                                     placeholder="Seu email"
                                     keyboardType="email-address"
+                                    placeholderTextColor={'#656565ff'}
                                     autoCapitalize="none"
                                 />
                                 <View style={styles.editButtons}>
@@ -313,6 +315,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                 value={senhaAtual}
                                 onChangeText={setSenhaAtual}
                                 placeholder="Senha atual"
+                                placeholderTextColor={'#656565ff'}
                                 secureTextEntry
                             />
                             <TextInput
@@ -320,6 +323,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                 value={novaSenha}
                                 onChangeText={setNovaSenha}
                                 placeholder="Nova senha (min. 6 caracteres)"
+                                placeholderTextColor={'#656565ff'}
                                 secureTextEntry
                             />
                             <TextInput
@@ -327,6 +331,7 @@ const Perfil = ({ navigation }: NavigationParameter) => {
                                 value={confirmarSenha}
                                 onChangeText={setConfirmarSenha}
                                 placeholder="Confirmar nova senha"
+                                placeholderTextColor={'#656565ff'}
                                 secureTextEntry
                             />
                         </View>
