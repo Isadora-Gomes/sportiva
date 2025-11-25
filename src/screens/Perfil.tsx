@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Dimensions } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
 import Icon from "../components/icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationParameter } from "../routes/Routes";
+import * as ImagePicker from 'expo-image-picker';
+
 
 const Perfil = ({ navigation }: NavigationParameter) => {
     const redirecionarCadastro = () => {
@@ -11,6 +12,20 @@ const Perfil = ({ navigation }: NavigationParameter) => {
     }
 
     const { width, height } = Dimensions.get('window');
+    const [imageUri, setImageUri] = useState<string | null>(null);
+
+    const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: true,
+    });
+
+    if (!result.canceled) {
+        setImageUri(result.assets[0].uri);
+    }
+};
+
 
     return (
         <SafeAreaView
@@ -24,19 +39,18 @@ const Perfil = ({ navigation }: NavigationParameter) => {
             <View style={{
                 height: height * 0.25,
                 justifyContent: 'center',
-                boxSizing: 'border-box',
             }}>
                 <Text style={styles.titulo}>Perfil</Text>
             </View>
             <View style={{ alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: '#121212', flex: 1, marginTop: -80 }}>
-                <TouchableOpacity style={styles.divfoto}>
+                <TouchableOpacity style={styles.divfoto} onPress={pickImage}>
                     <View style={styles.foto}>
                         <Image
-                            source={require("../../assets/img/perfil.png")}
+                            source={imageUri ? { uri: imageUri } : require("../../assets/img/perfil.png")}
                             style={{ width: 120, height: 120, borderRadius: 60 }}
                         />
                     </View>
-                    <Text style={{ color: "#d2d2d2", fontSize: 16, fontWeight: 600 }}>Alterar Foto</Text>
+                    <Text style={{ color: "#d2d2d2", fontSize: 16, fontWeight: '600' }}>Alterar Foto</Text>
                 </TouchableOpacity>
                 <Text style={styles.label}>Nome</Text>
                 <View style={styles.inputContainer}>
@@ -106,7 +120,7 @@ const styles = StyleSheet.create({
     titulo: {
         fontSize: 18,
         color: '#fff',
-        fontWeight: 500,
+        fontWeight: '500',
         fontFamily: 'Outfit',
         padding: 30,
         textAlign: 'left',
@@ -121,7 +135,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Gotham',
         alignSelf: 'flex-start',
         marginLeft: 40,
-        fontWeight: 600,
+        fontWeight: '600',
     },
     input: {
         flex: 1,
@@ -150,7 +164,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontSize: 18,
-        fontWeight: 800,
+        fontWeight: '800',
         fontFamily: 'Gotham',
     },
     textCadastro: {
