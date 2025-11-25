@@ -1,3 +1,5 @@
-export default interface DataModel<K extends string | number> {
-    id: K
-}
+class SetToNull {}
+
+export const setToNull = new SetToNull();
+
+export type NullableSetter<T> = T | null | SetToNull;
